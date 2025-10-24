@@ -4,43 +4,38 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\HasAttachment;
 
-class WorkResult extends Model
+class WarmingUp extends Model
 {
-    use HasFactory, HasAttachment;
+    use HasFactory;
 
-    protected $table = 'work_results';
+    protected $table = 'warming_up';
 
     protected $fillable = [
         'working_report_id',
         'machine_id',
-        'region_id',
-        'antara',
-        'km_hm',
-        'jumlah_msp',
         'waktu_start_engine',
-        'jam_luncuran',
         'jam_kerja',
         'jam_mesin',
         'jam_genset',
         'counter_pecok',
         'oddometer',
+        'waktu_stop_engine',
         'penggunaan_hsd',
         'hsd_tersedia',
-        'pengawal_id',
         'note',
+        'approved_by',
+        'approved_at',
         'created_by_id',
         'updated_by_id',
     ];
 
     protected $with = [
         'machine',
-        'region',
-        'pengawal',
         'createdBy',
+        'approvedBy',
         'updatedBy',
-        'workresult_user',
+        'warmingup_user',
     ];
 
     public function workingreport()
@@ -58,9 +53,9 @@ class WorkResult extends Model
         return $this->belongsTo(MasterRegion::class, 'region_id');
     }
 
-    public function pengawal()
+    public function approvedBy()
     {
-        return $this->belongsTo(User::class, 'pengawal_id');
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function createdBy()
@@ -73,14 +68,14 @@ class WorkResult extends Model
         return $this->belongsTo(User::class, 'updated_by_id');
     }
 
-    public function workresult_user()
+    public function warmingup_user()
     {
-        return $this->hasMany(WorkresultUser::class, 'work_result_id', 'id');
+        return $this->hasMany(WarmingUpUser::class, 'warming_up_id', 'id');
     }
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'workresult_user', 'work_result_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'warmingup_user', 'warming_up_id', 'user_id')->withTimestamps();
     }
 
 }

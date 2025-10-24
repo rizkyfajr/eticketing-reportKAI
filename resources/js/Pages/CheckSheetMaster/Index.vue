@@ -18,21 +18,16 @@ import Input from '@/Components/Input.vue'
 import InputError from '@/Components/InputError.vue'
 import Select from '@vueform/multiselect'
 
-const { machine } = defineProps({
-    machine: Array,
-    regions: Array
+const { check_sheet_master } = defineProps({
+    check_sheet_master: Object
 })
 
 const form = useForm({
-  region_id: '',
-  name: '',
-  type: '',
-//   code: '',
-  nomor: '',
-  tahun_md: '',
-  umur: '',
-  no_sarana: '',
-  keterangan: '',
+  group_name: '',
+  komponen: '',
+  rujukan: '',
+  satuan: '',
+  urutan: '',
 })
 
 const render = ref(true)
@@ -51,28 +46,24 @@ const close = () => {
 }
 
 const store = () => {
-    return form.post(route('master-machines.store'), {
+    return form.post(route('master-checksheet.store'), {
         onSuccess: () => close(),
         onError: () => show(),
     })
 }
 
-const edit = (machine) => {
-    form.id = machine.id
-    form.region_id = machine.region_id
-    form.name = machine.name
-    form.type = machine.type
-    // form.code = machine.code
-    form.nomor = machine.nomor
-    form.tahun_md = machine.tahun_md
-    form.umur = machine.umur
-    form.no_sarana = machine.no_sarana
-    form.keterangan = machine.keterangan
+const edit = (check_sheet_master) => {
+    form.id = check_sheet_master.id
+    form.group_name = check_sheet_master.group_name
+    form.komponen = check_sheet_master.komponen
+    form.rujukan = check_sheet_master.rujukan
+    form.satuan = check_sheet_master.satuan
+    form.urutan = check_sheet_master.urutan
     show()
 }
 
 const update = () => {
-    return form.patch(route('master-machines.update', form.id), {
+    return form.patch(route('master-checksheet.update', form.id), {
         onSuccess: () => close(),
         onError: () => show(),
     })
@@ -88,7 +79,7 @@ const destroy = async machien => {
     })
 
     if (response.isConfirmed) {
-        return form.delete(route('master-machines.destroy', machien.id), {
+        return form.delete(route('master-checksheet.destroy', machien.id), {
             onFinish: close,
         })
     }
@@ -111,10 +102,10 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             'pl-1 md:pl-64': open,
         }">
         <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Master Mesin</h2>
+            <h2 class="font-bold text-2xl">Master Check Sheet</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Mesin</span> 
+           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master Check Sheet</span> 
             <slot />
         </main>
         </div>
@@ -125,7 +116,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <!-- <h1 class="w-full flex justify-center items-center h-[80px] text-2xl font-bold">Data <span class="ml-2 mr-2"
                         style="font-family: taviraj;"></span>Divison</h1> -->
                 <div class="flex items-center justify-end space-x-2 p-2 pr-[1.688rem]">
-                    <Button v-if="can('create machine')" @click.prevent="form.id = null; show()"
+                    <Button v-if="can('create check sheet master')" @click.prevent="form.id = null; show()"
                         class="flex items-center justify-center grid gap-1 w-auto h-11 mr-[1.313rem] rounded-md text-center bg-green-600 hover:bg-green-700"
                        >
                         <!-- <Icon name="plus" class="w-full" /> -->
@@ -138,7 +129,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
             <template #body>
                 <div class="flex flex-col space-y-2">
-                    <Builder v-if="render" :url="route('master-machines.paginate')" ref="table">
+                    <Builder v-if="render" :url="route('master-checksheet.paginate')" ref="table">
                         <template #thead="table">
                             <tr class="bg-gray-200 border-gray-300">
                                 <Th :table="table" :sort="false" name="id"
@@ -146,45 +137,30 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                     {{ __('no') }}
                                 </Th>
 
-                                <Th :table="table" :sort="true" name="region_id"
+                                <Th :table="table" :sort="true" name="group_name"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Daop') }}
-                                </Th>   
-
-                                <Th :table="table" :sort="true" name="name"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Jenis') }}
+                                    {{ __('nama grup') }}
                                 </Th>    
 
-                                <Th :table="table" :sort="true" name="type"
+                                <Th :table="table" :sort="true" name="komponen"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('type') }}
+                                    {{ __('komponen') }}
+                                </Th>    
+
+                                <Th :table="table" :sort="true" name="rujukan"
+                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    {{ __('rujukan') }}
                                 </Th>  
 
-                                <Th :table="table" :sort="true" name="nomor"
+                                <Th :table="table" :sort="true" name="satuan"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nomor') }}
-                                </Th>  
+                                    {{ __('satuan') }}
+                                </Th>                        
 
-                                <Th :table="table" :sort="true" name="tahun_md"
+                                <Th :table="table" :sort="true" name="urutan"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('tahun md') }}
-                                </Th>     
-
-                                <Th :table="table" :sort="true" name="umur"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('umur') }}
-                                </Th>     
-
-                                <Th :table="table" :sort="true" name="nomor_sarana"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nomor sarana') }}
-                                </Th>      
-
-                                <Th :table="table" :sort="true" name="keterangan"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('keterangan') }}
-                                </Th>                         
+                                    {{ __('urutan') }}
+                                </Th>                      
 
                                 <Th :table="table" :sort="true"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
@@ -195,52 +171,37 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                         <template #tfoot="table">
                             <tr class="bg-gray-200 border-gray-300 ">
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center capitalize font-bold">
+                                <Th :table="table" :sort="false"
+                                    class="border px-3 py-2 text-center capitalize font-bold pl-[2.75rem] pb-[1.5rem]">
                                     {{ __('no') }}
                                 </Th>
 
-                                <Th :table="table" :sort="false" 
+                                <Th :table="table" :sort="false"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Daop') }}
-                                </Th>   
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Jenis') }}
-                                </Th>    
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('type') }}
+                                    {{ __('nama grup') }}
                                 </Th>  
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nomor') }}
-                                </Th>  
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('tahun md') }}
-                                </Th>     
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('umur') }}
-                                </Th>     
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nomor sarana') }}
-                                </Th>      
-
-                                <Th :table="table" :sort="false" 
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('keterangan') }}
-                                </Th>                         
 
                                 <Th :table="table" :sort="false"
+                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    {{ __('komponen') }}
+                                </Th>     
+
+                                <Th :table="table" :sort="false"
+                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    {{ __('rujukan') }}
+                                </Th>  
+
+                                <Th :table="table" :sort="false"
+                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    {{ __('satuan') }}
+                                </Th>   
+
+                                <Th :table="table" :sort="false"
+                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    {{ __('urutan') }}
+                                </Th>                        
+
+                                <Th :table="table" :sort="true"
                                     class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
                                     {{ __('Action') }}
                                 </Th>
@@ -266,8 +227,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                             <template v-else>
                               <tr
-                                v-for="(machine, i) in data"
-                                :key="machine.id"
+                                v-for="(check_sheet_master, i) in data"
+                                :key="check_sheet_master.id"
                                 :class="processing && 'bg-gray-100'"
                                 class="transition-all duration-300 h-[4.375rem]"
                               >
@@ -276,50 +237,38 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                 </td>
 
                                 <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.region_id }}
+                                  {{ check_sheet_master.group_name }}
                                 </td>
 
                                 <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.name }}
+                                  {{ check_sheet_master.komponen }}
                                 </td>
 
                                 <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.type || '-' }}
+                                  {{ check_sheet_master.rujukan}}
                                 </td>
 
                                 <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.nomor || '-' }}
+                                  {{ check_sheet_master.satuan}}
                                 </td>
 
                                 <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.tahun_md || '-' }}
-                                </td>
-
-                                <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.umur || '-' }}
-                                </td>
-
-                                <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.no_sarana || '-' }}
-                                </td>
-
-                                <td class="capitalize font-semibold text-center border-b">
-                                  {{ machine.keterangan || '-' }}
+                                  {{ check_sheet_master.urutan}}
                                 </td>
 
                                 <td class="px-2 py-2 border-b text-center">
                                   <div class="flex justify-center gap-2">
                                     <ButtonBlue
-                                      v-if="can('update machine')"
-                                      @click.prevent="edit(machine)"
+                                      v-if="can('update check sheet master')"
+                                      @click.prevent="edit(check_sheet_master)"
                                     >
                                       <Icon name="edit" />
                                       <p class="uppercase">{{ __('ubah') }}</p>
                                     </ButtonBlue>
 
                                     <ButtonRed
-                                      v-if="can('delete machine')"
-                                      @click.prevent="destroy(machine)"
+                                      v-if="can('delete check sheet master')"
+                                      @click.prevent="destroy(check_sheet_master)"
                                     >
                                       <Icon name="trash" />
                                       <p class="uppercase">{{ __('hapus') }}</p>
@@ -351,121 +300,72 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                             <template v-if="hasRole(['superuser', 'user', 'asman', 'spv', 'ampr', 'mpm', 'it']) && !regis">
                                 <div class="flex flex-col space-y-2">
                                   <div class="flex items-center space-x-2">
-                                      <label for="region_id" class="w-1/3 capitalize">
-                                          {{ __('Daop') }}
+                                      <label for="group_name" class="w-1/3 capitalize">
+                                          {{ __('Nama Grup') }}
                                       </label>
 
-                                      <Select
-                                            v-model="form.region_id"
-                                            :options="regions.map(region => ({
-                                            label: region.name,
-                                            value: region.id,
-                                            }))"
-                                            :searchable="true"
-                                            placeholder="Pilih Daop"
-                                            required
-                                        />
+                                      <Input v-model="form.group_name"
+                                          :placeholder="__('Nama Grup (Engine, Mechanical dll)')" type="text"
+                                          required />
                                   </div>
 
-                                  <InputError :error="form.errors.region_id" />
+                                  <InputError :error="form.errors.group_name" />
                                 </div>
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="name" class="w-1/3 capitalize">
-                                            {{ __('name') }}
+                                        <label for="komponen" class="w-1/3 capitalize">
+                                            {{ __('Komponen') }}
                                         </label>
 
-                                        <Input v-model="form.name"
-                                            :placeholder="__('name')" type="text"
+                                        <Input v-model="form.komponen"
+                                            :placeholder="__('Komponen')" type="text"
                                             required />
                                     </div>
 
-                                    <InputError :error="form.errors.name" />
+                                    <InputError :error="form.errors.komponen" />
                                 </div>
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="type" class="w-1/3 capitalize">
-                                            {{ __('type') }}
+                                        <label for="rujukan" class="w-1/3 capitalize">
+                                            {{ __('rujukan') }}
                                         </label>
 
-                                        <Input v-model="form.type"
-                                            :placeholder="__('type')" type="text"
+                                        <Input v-model="form.rujukan"
+                                            :placeholder="__('rujukan')" type="text"
                                             required />
                                     </div>
 
-                                    <InputError :error="form.errors.type" />
+                                    <InputError :error="form.errors.rujukan" />
                                 </div>
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="nomor" class="w-1/3 capitalize">
-                                            {{ __('nomor') }}
+                                        <label for="satuan" class="w-1/3 capitalize">
+                                            {{ __('satuan') }}
                                         </label>
 
-                                        <Input v-model="form.nomor"
-                                            :placeholder="__('nomor')" type="text"
-                                            required />
-                                    </div>
-
-                                    <InputError :error="form.errors.nomor" />
-                                </div>
-
-                                <div class="flex flex-col space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <label for="tahun_md" class="w-1/3 capitalize">
-                                            {{ __('tahun md') }}
-                                        </label>
-
-                                        <Input v-model="form.tahun_md"
-                                            :placeholder="__('tahun md')" type="number"
-                                            required />
-                                    </div>
-
-                                    <InputError :error="form.errors.tahun_md" />
-                                </div>
-
-                                <div class="flex flex-col space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <label for="umur" class="w-1/3 capitalize">
-                                            {{ __('umur') }}
-                                        </label>
-
-                                        <Input v-model="form.umur"
-                                            :placeholder="__('umur')" type="number"
-                                            required />
-                                    </div>
-
-                                    <InputError :error="form.errors.umur" />
-                                </div>
-
-                                <div class="flex flex-col space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <label for="no_sarana" class="w-1/3 capitalize">
-                                            {{ __('Nomor Sarana') }}
-                                        </label>
-
-                                        <Input v-model="form.no_sarana"
-                                            :placeholder="__('Nomor Sarana')" type="text"
-                                            required />
-                                    </div>
-
-                                    <InputError :error="form.errors.no_sarana" />
-                                </div>
-
-                                <div class="flex flex-col space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <label for="keterangan" class="w-1/3 capitalize">
-                                            {{ __('keterangan') }}
-                                        </label>
-
-                                        <Input v-model="form.keterangan"
-                                            :placeholder="__('keterangan')" type="text"
+                                        <Input v-model="form.satuan"
+                                            :placeholder="__('satuan (%, Bar, °C, dll)')" type="text"
                                             />
                                     </div>
 
-                                    <InputError :error="form.errors.keterangan" />
+                                    <InputError :error="form.errors.satuan" />
+                                </div>
+
+                                <div class="flex flex-col space-y-2">
+                                    <div class="flex items-center space-x-2">
+                                        <label for="urutan" class="w-1/3 capitalize">
+                                            {{ __('urutan') }}
+                                        </label>
+
+                                        <Input v-model="form.urutan"
+                                            :placeholder="__('urutan')" type="text"
+                                            required />
+                                    </div>
+
+                                    <InputError :error="form.errors.urutan" />
                                 </div>
                                 
                             </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, nextTick, ref, reactive, toRaw } from 'vue'
+import { onMounted, onUnmounted, nextTick, ref, computed, toRaw } from 'vue'
 import { useForm, Link, usePage } from '@inertiajs/inertia-vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import Card from '@/Components/Card.vue'
@@ -16,40 +16,122 @@ import Close from '@/Components/Button/Close.vue'
 import Icon from '@/Components/Icon.vue'
 import axios from 'axios';
 import BtnAttachment from '@/Components/Button/Attachment.vue'
+import { result } from 'lodash'
 // import moment from 'moment'; 
 
-const { report, machine, region, users } = defineProps({
-    report: Array,
-    machine: Array,
-    region: Array,
+const props = defineProps({
+    report: Object,
+    checksheet: Array,
+    checksheetday: Array,
+    checksheetworkresult: Array,
+    warmingup: Array,
+    workresult: Array,
+    machines: Array,
+    regions: Array,
     users: Array,
+    warmingup_user: Array,
+    workresult_user: Array,
+    masters: Array,
+    results: Array,
 })
 
 const { user } = usePage().props.value
 
 const form = useForm({
-    id: report?.id || null,
-    machine_id: report?.machine_id || null,
-    region_id: report?.region_id || null,
-    date: report?.date || null,
-    has_trouble: report?.has_trouble || null,
-    status: report?.status || null,
+    id: props.report?.id || null,
+    machine_id: props.report?.machine_id || null,
+    region_id: props.report?.region_id || null,
+    date: props.report?.date || null,
+    has_trouble: props.report?.has_trouble || null,
+    status: props.report?.status || null,
 });
 
+const form1 = useForm({
+    id: props.checksheetday?.id || null,
+    working_report_id: props.report?.id || null,
+    no_seri: props.checksheetday?.no_seri || null,
+    jenis: props.checksheetday?.jenis || null,
+    jam_mesin: props.checksheetday?.jam_mesin || null,
+    counter_pecok: props.checksheetday?.counter_pecok || null,
+    kilometer_mesin: props.checksheetday?.kilometer_mesin || null,
+    tanggal: props.checksheetday?.tanggal || null,
+    lokasi: props.checksheetday?.lokasi || null,
+    wilayah: props.checksheetday?.wilayah || null,
+    region_id: props.checksheetday?.region_id || null,
+    note: props.checksheetday?.note || null,
+    results: props.results ?? [],
+});
 
-// const form1 = useForm({
-//   id: deviation?.id || null,
-//   immediate_action: secondSection?.immediate_action || null,
-//   justification_of_action: secondSection?.justification_of_action || null,
-//   date_of_action: secondSection?.date_of_action || null, 
-//   impact_to_others: secondSection?.impact_to_others || null, 
-//   initial_level: secondSection?.initial_level || null, 
-//   potential_rootcause: secondSection?.potential_rootcause || null, 
-//   corrective_action: secondSection?.corrective_action || null, 
-//   impacting_other_rules: riskImpactAnalysis?.impacting_other_rules || 0,
-//   impacting_to_patient: riskImpactAnalysis?.impacting_to_patient || 0,
-//   impacting_cqa: riskImpactAnalysis?.impacting_cqa || 0,
+const form2 = useForm({
+  id: props.checksheetworkresult?.id ?? null,
+  working_report_id: props.report?.id || null,
+  check_sheet_day_id: props.checksheetday?.id ?? null,
+  catatan_gangguan: props.checksheetworkresult?.catatan_gangguan ?? '',
+  lokasi_dan_jam1: props.checksheetworkresult?.lokasi_dan_jam1 ?? '',
+  hu_hi_1: props.checksheetworkresult?.hu_hi_1 ?? '',
+  jumlah_1: props.checksheetworkresult?.jumlah_1 ?? '',
+  lokasi_dan_jam2: props.checksheetworkresult?.lokasi_dan_jam2 ?? '',
+  hu_hi_2: props.checksheetworkresult?.hu_hi_2 ?? '',
+  jumlah_2: props.checksheetworkresult?.jumlah_2 ?? '',
+  lokasi_dan_jam3: props.checksheetworkresult?.lokasi_dan_jam3 ?? '',
+  hu_hi_3: props.checksheetworkresult?.hu_hi_3 ?? '',
+  jumlah_3: props.checksheetworkresult?.jumlah_3 ?? '',
+  operator_by1: props.checksheetworkresult?.operator_by1 ?? '',
+  operator_by2: props.checksheetworkresult?.operator_by2 ?? '',
+  operator_by3: props.checksheetworkresult?.operator_by3 ?? '',
+  operator_by4: props.checksheetworkresult?.operator_by4 ?? '',
+  operator_at1: props.checksheetworkresult?.operator_at1 ?? '',
+  operator_at2: props.checksheetworkresult?.operator_at2 ?? '',
+  operator_at3: props.checksheetworkresult?.operator_at3 ?? '',
+  operator_at4: props.checksheetworkresult?.operator_at4 ?? '',
+  validasi1: props.checksheetworkresult?.validasi1 ?? '',
+  validasi2: props.checksheetworkresult?.validasi2 ?? '',
+  validasi3: props.checksheetworkresult?.validasi3 ?? '',
+  validasi4: props.checksheetworkresult?.validasi4 ?? '',
+});
+
+// onMounted(() => {
+//   console.log("Loaded Results:", props.checksheetworkresult);
 // });
+
+const form3 = useForm({
+    id: props.warmingup?.id || null,
+    working_report_id: props.report?.id || null,
+    machine_id: props.warmingup?.machine_id || null,
+    waktu_start_engine: props.warmingup?.waktu_start_engine || null,
+    jam_kerja: props.warmingup?.jam_kerja || null,
+    jam_mesin: props.warmingup?.jam_mesin || null,
+    jam_genset: props.warmingup?.jam_genset || null,
+    counter_pecok: props.warmingup?.counter_pecok || null,
+    oddometer: props.warmingup?.oddometer || null,
+    waktu_stop_engine: props.warmingup?.waktu_stop_engine || null,
+    penggunaan_hsd: props.warmingup?.penggunaan_hsd || null,
+    hsd_tersedia: props.warmingup?.hsd_tersedia || null,
+    note: props.warmingup?.note || null,
+    user_id: props.warmingup?.warmingup_user.map(warmingup_user => warmingup_user.user_id) || [],
+});
+
+const form4 = useForm({
+    id: props.workresult?.id || null,
+    working_report_id: props.report?.id || null,
+    machine_id: props.workresult?.machine_id || null,
+    region_id: props.workresult?.region_id || null,
+    antara: props.workresult?.antara || null,
+    km_hm: props.workresult?.km_hm || null,
+    jumlah_msp: props.workresult?.jumlah_msp || null,
+    waktu_start_engine: props.workresult?.waktu_start_engine || null,
+    jam_luncuran: props.workresult?.jam_luncuran || null,
+    jam_kerja: props.workresult?.jam_kerja || null,
+    jam_mesin: props.workresult?.jam_mesin || null,
+    jam_genset: props.workresult?.jam_genset || null,
+    counter_pecok: props.workresult?.counter_pecok || null,
+    oddometer: props.workresult?.oddometer || null,
+    penggunaan_hsd: props.workresult?.penggunaan_hsd || null,
+    hsd_tersedia: props.workresult?.hsd_tersedia || null,
+    pengawal_id: props.workresult?.pengawal_id || null,
+    note: props.workresult?.note || null,
+    user_id: props.workresult?.workresult_user.map(workresult_user => workresult_user.user_id) || [],
+});
 
 const render = ref(true)
 const table = ref(null)
@@ -65,153 +147,483 @@ const close = () => {
   })
 }
 
-// const update = async () => {
+const submitchecksheetday = () => {
+  Swal.fire({
+    title: 'Menyimpan data...',
+    didOpen: () => Swal.showLoading(),
+    allowOutsideClick: false,
+  })
+
+  form1.post(route('check-sheet-day.store', props.report.id), {
+    onSuccess: () => {
+      close();
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        title: 'Data berhasil disimpan!',
+        timer: 1500,
+        showConfirmButton: false,
+      }).then(() => {
+        window.location.reload()
+      })
+    },
+    onError: () => {
+      show();
+      Swal.hideLoading();
+      Swal.fire({
+        title: 'Terjadi kesalahan!',
+        text: 'Gagal menyimpan data.',
+        icon: 'error',
+      });
+    },
+  })
+}
+
+const updatechecksheetday = async () => {
+  try {
+    const response = await Swal.fire({
+      title: 'Konfirmasi',
+      html: `Apakah anda yakin akaan ubah data ini?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+    });
+
+    if (response.isConfirmed) {
+      Swal.fire({
+        title: 'Sedang menyimpan data...',
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        allowOutsideClick: false,
+      });
+
+      const result = await form1.patch(route('check-sheet-day.update', form1.id), {
+        onSuccess: () => {
+          close();
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Data berhasil diupdate!',
+            icon: 'success',
+          });
+        },
+        onError: () => {
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Terjadi kesalahan!',
+            text: 'Gagal menyimpan data.',
+            icon: 'error',
+          });
+        },
+      });
+
+      return result;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const toggleResult = async (item, field) => {
+  const previousValue = item[field];
+  item[field] = item[field] == 1 ? 0 : 1;
+
+  try {
+    const response = await axios.post(route("checksheetday-results.autosave"), {
+      check_sheet_day_id: form1.id,
+      check_sheet_master_day_id: item.check_sheet_master_day_id,
+      cek: item.cek ?? 0,
+      tambahan: item.tambahan ?? 0,
+      ganti: item.ganti ?? 0,
+      kiri_depan: item.kiri_depan ?? '',
+      kanan_depan: item.kanan_depan ?? '',
+      keterangan: item.keterangan ?? '',
+    });
+
+    // console.log(`Autosaved ${field}: ${item[field]}`);
+
+    Swal.fire({
+      icon: "success",
+      title: previousValue == null ? "Berhasil Disimpan" : "Berhasil Diperbarui",
+      timer: 1000,
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    console.error("Autosave failed:", error);
+    Swal.fire("Error", "Gagal menyimpan data!", "error");
+  }
+};
+
+const saveTextField = async (item) => {
+  try {
+    await axios.post(route("checksheetday-results.autosave"), {
+      check_sheet_day_id: form1.id,
+      check_sheet_master_day_id: item.check_sheet_master_day_id,
+      cek: item.cek ?? 0,
+      tambahan: item.tambahan ?? 0,
+      ganti: item.ganti ?? 0,
+      kiri_depan: item.kiri_depan ?? '',
+      kanan_depan: item.kanan_depan ?? '',
+      keterangan: item.keterangan ?? '',
+    });
+
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil disimpan",
+      timer: 1000,
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    console.error("Autosave failed:", error);
+    Swal.fire("Error", "Gagal menyimpan data!", "error");
+  }
+};
+
+// const saveWorkResult = async () => {
 //   try {
-//     // const message = '';
-//     const response = await Swal.fire({
-//       title: 'Konfirmasi',
-//       html: `Apakah anda akan menyimpan isian section 1 untuk penyimpangan ini?`,
-//       // html: message,
-//       icon: 'question',
-//       showCancelButton: true,
-//       showCloseButton: true,
-//     });
+//     await axios.post(route("checksheet-workresult.autosave"), {
+//       id: form2.id,
+//       working_report_id: form2.working_report_id,
+//       check_sheet_day_id: form2.check_sheet_day_id,
+//       catatan_gangguan: form2.catatan_gangguan,
+//       lokasi_dan_jam1: form2.lokasi_dan_jam1,
+//       hu_hi_1: form2.hu_hi_1,
+//       jumlah_1: form2.jumlah_1,
+//       lokasi_dan_jam2: form2.lokasi_dan_jam2,
+//       hu_hi_2: form2.hu_hi_2,
+//       jumlah_2: form2.jumlah_2,
+//       lokasi_dan_jam3: form2.lokasi_dan_jam3,
+//       hu_hi_3: form2.hu_hi_3,
+//       jumlah_3: form2.jumlah_3,
+//       // operator_by1: form2.operator_by1,
+//       // operator_by2: form2.operator_by2,
+//       // operator_by3: form2.operator_by3,
+//       // operator_by4: form2.operator_by4,
+//       operator_by1: form2.operator_by1?.value ?? form2.operator_by1 ?? null,
+//       operator_by2: form2.operator_by2?.value ?? form2.operator_by2 ?? null,
+//       operator_by3: form2.operator_by3?.value ?? form2.operator_by3 ?? null,
+//       operator_by4: form2.operator_by4?.value ?? form2.operator_by4 ?? null,
+//       validasi1: form2.validasi1,
+//       validasi2: form2.validasi2,
+//       validasi3: form2.validasi3,
+//       validasi4: form2.validasi4,
+//     })
 
-//     if (response.isConfirmed) {
-//       Swal.fire({
-//         title: 'Menyimpan data...',
-//         timer: 2000,
-//         timerProgressBar: true,
-//         onBeforeOpen: () => {
-//           Swal.showLoading();
-//         },
-//       });
-
-//       if (!form.registration_number) {
-//         form.registration_number = await generateCode();
-//       }
-
-//       // if (form.status === 'Section 1 - Reported') {
-//       //   form.registration_number = await generateCode();
-//       // }
-
-//       const result = await form.patch(route('deviation.register', form.id), {
-//         onSuccess: () => {
-//           close();
-//           Swal.showLoading();
-//           Swal.fire({
-//             title: 'Data berhasil disimpan!',
-//             icon: 'success',
-//           });
-//         },
-//         onError: () => {
-//           show();
-//           Swal.showLoading();
-//           Swal.fire({
-//             title: 'Terjadi kesalahan!',
-//             text: 'Gagal menyimpan data.',
-//             icon: 'error',
-//           });
-//         },
-//       });
-
-//       return result;
-//     }
+//     Swal.fire({
+//       icon: "success",
+//       title: "Berhasil disimpan otomatis",
+//       timer: 1000,
+//       showConfirmButton: false,
+//     })
 //   } catch (error) {
-//     console.error(error);
+//     console.error("Autosave gagal:", error)
+//     Swal.fire("Error", "Gagal menyimpan data!", "error")
 //   }
-// };
+// }
 
-// const sectionTwoSave = async () => {
-//   try {
+const submitchecksheetworkresult = async () => {
+  try {
+    await axios.post(route("checksheet-workresult.store"), form2)
+    Swal.fire({
+      icon: "success",
+      title: "Data berhasil disimpan!",
+      timer: 1500,
+      showConfirmButton: false,
+    })
+  } catch (error) {
+    console.error(error)
+    Swal.fire("Gagal", "Terjadi kesalahan saat menyimpan data", "error")
+  }
+}
 
-//     const response = await Swal.fire({
-//       title: 'Konfirmasi',
-//       html: `Apakah anda akan menyimpan isian section 2 untuk penyimpangan ini? <br>
-//             <span style="color: red;">Isian tidak dapat dirubah setelah Asman terkait menyetujui section 2!
-//             <span style="color: red;">Pastikan isi informasi dengan benar. </span>`,
-//       // html: `Apakah anda akan menyimpan isian section 2 untuk penyimpangan ini?`,
-//       icon: 'question',
-//       showCancelButton: true,
-//       showCloseButton: true,
-//     });
+const updatechecksheetworkresult = async () => {
+  try {
+    const response = await Swal.fire({
+      title: 'Konfirmasi',
+      html: `Apakah anda yakin akan ubah data ini?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonText: 'Ya, ubah',
+      cancelButtonText: 'Batal',
+    });
 
-//     if (response.isConfirmed) {
-//       Swal.fire({
-//         title: 'Menyimpan data...',
-//         timer: 2000,
-//         timerProgressBar: true,
-//         onBeforeOpen: () => {
-//           Swal.showLoading();
-//         },
-//       });
+    if (!response.isConfirmed) return;
 
-//       const result = await form1.post(route('deviation.sectionTwoSave', form1.id), {
-//         onSuccess: () => {
-//           close();
-//           Swal.showLoading();
-//           Swal.fire({
-//             title: 'Data berhasil disimpan!',
-//             icon: 'success',
-//           }).then(() => {
-//             window.location.reload();
-//           });
-//         },
-//         onError: () => {
-//           show();
-//           Swal.showLoading();
-//           Swal.fire({
-//             title: 'Terjadi kesalahan!',
-//             text: 'Gagal menyimpan data.',
-//             icon: 'error',
-//           });
-//         },
-//       });
+    Swal.fire({
+      title: 'Sedang menyimpan data...',
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      allowOutsideClick: false,
+    });
 
-//       return result;
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+    await form2.patch(route('checksheet-workresult.update', form2.id), {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Data berhasil diperbarui!',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      },
+      onError: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Terjadi kesalahan!',
+          text: 'Gagal menyimpan data.',
+        });
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Kesalahan!',
+      text: 'Terjadi kesalahan tak terduga.',
+    });
+  }
+};
 
-const currentSection = ref('workingreport');
+const canApprove = computed(() => {
+  const result = props.checksheetday?.checksheetworkresult
+  if (!result || !user?.id) return false
 
-const fetch = async (section = 'firstSection', deviation) => {
+  return (
+    (result.operator_by1 === user.id && !result.operator_at1) ||
+    (result.operator_by2 === user.id && !result.operator_at2) ||
+    (result.operator_by3 === user.id && !result.operator_at3) ||
+    (result.operator_by4 === user.id && !result.operator_at4)
+  )
+})
+
+const approvechecksheetworkresult = async () => {
+  const result = props.checksheetday?.checksheetworkresult
+  if (!result) return
+
+  const confirm = await Swal.fire({
+    title: "Apakah Anda yakin?",
+    text: "Anda akan menyetujui data ini.",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Ya, setujui",
+    cancelButtonText: "Batal",
+  })
+
+  if (!confirm.isConfirmed) return 
+
+  try {
+    const res = await axios.post(route("checksheet-workresult.approve"), {
+      id: result.id,
+    })
+
+    const now = new Date().toISOString()
+    if (result.operator_by1 === user.id) result.operator_at1 = now
+    if (result.operator_by2 === user.id) result.operator_at2 = now
+    if (result.operator_by3 === user.id) result.operator_at3 = now
+    if (result.operator_by4 === user.id) result.operator_at4 = now
+
+    Swal.fire({
+      icon: "success",
+      title: res.data.message || "Berhasil disetujui!",
+      timer: 1500,
+      showConfirmButton: false,
+    })
+  } catch (error) {
+    console.error(error)
+    Swal.fire({
+      icon: "error",
+      title: "Gagal approve!",
+      text: error.response?.data?.message || error.message || "Terjadi kesalahan saat menyetujui.",
+    })
+  }
+}
+
+const submitwarmingup = () => {
+  Swal.fire({
+    title: 'Menyimpan data...',
+    didOpen: () => Swal.showLoading(),
+    allowOutsideClick: false,
+  })
+
+  form3.post(route('warming-up.store', report.id), {
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Data berhasil disimpan.',
+        timer: 1500,
+        showConfirmButton: false,
+      })
+    },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: 'Terjadi kesalahan saat menyimpan data.',
+      })
+    },
+  })
+}
+
+const updatewarmingup = async () => {
+  try {
+    const response = await Swal.fire({
+      title: 'Konfirmasi',
+      html: `Apakah anda yakin akaan ubah data ini?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+    });
+
+    if (response.isConfirmed) {
+      Swal.fire({
+        title: 'Sedang menyimpan data...',
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        allowOutsideClick: false,
+      });
+
+      const result = await form3.patch(route('warming-up.update', form3.id), {
+        onSuccess: () => {
+          close();
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Data berhasil diupdate!',
+            icon: 'success',
+          });
+        },
+        onError: () => {
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Terjadi kesalahan!',
+            text: 'Gagal menyimpan data.',
+            icon: 'error',
+          });
+        },
+      });
+
+      return result;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const submitworkresult = () => {
+  Swal.fire({
+    title: 'Menyimpan data...',
+    didOpen: () => Swal.showLoading(),
+    allowOutsideClick: false,
+  })
+
+  form4.post(route('work-results.store', report.id), {
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Laporan kerja berhasil disimpan.',
+        timer: 1500,
+        showConfirmButton: false,
+      })
+    },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: 'Terjadi kesalahan saat menyimpan data.',
+      })
+    },
+  })
+}
+
+const updateworkresult = async () => {
+  try {
+    const response = await Swal.fire({
+      title: 'Konfirmasi',
+      html: `Apakah anda yakin akaan ubah data ini?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+    });
+
+    if (response.isConfirmed) {
+      Swal.fire({
+        title: 'Sedang menyimpan data...',
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        allowOutsideClick: false,
+      });
+
+      const result = await form4.patch(route('work-results.update', form4.id), {
+        onSuccess: () => {
+          close();
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Data berhasil diupdate!',
+            icon: 'success',
+          });
+        },
+        onError: () => {
+          Swal.showLoading();
+          Swal.fire({
+            title: 'Terjadi kesalahan!',
+            text: 'Gagal menyimpan data.',
+            icon: 'error',
+          });
+        },
+      });
+
+      return result;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const currentSection = ref('report');
+
+const fetch = async (section = 'report', report) => {
+  const reportId = typeof report === 'object' ? report.id : report;
+
+  if (!reportId) {
+    console.error('Report tidak ditemukan');
+    return;
+  }
+
   Swal.showLoading();
 
   try {
-    const response = await axios.post(route('deviation.fetch', deviation.id), { section: section });
+    const response = await axios.post(
+      route('working-reports.fetch', reportId),
+      { section }
+    );
     const data = response.data;
-    
     Swal.close();
 
     switch (section) {
-      case 'workingreport':
+      case 'report':
         form.first_section = data.first_section;
         break;
-      case 'secondSection':
-        form1.second_section = data.second_section;
-        form1.riskImpactAnalysis = data.second_section?.riskImpactAnalysis;
+      case 'checksheetday':
+        form1.checksheetday = data.checksheetday;
         break;
-      case 'thirdSection':
-        form2.third_section = data.third_section;
-        form2.fiveWhy = data.third_section?.fiveWhy;
-        form2.fishbone = data.third_section?.fishbone;
+      case 'warmingup':
+        form3.warmingup = data.warmingup;
         break;
-      case 'fourthSection':
-        form3.fourth_section = data.fourth_section;
+      case 'uploadfoto':
+        form2.uploadfoto = data.uploadfoto;
         break;
-      case 'fifthSection':
-        form4.fifth_section = data.fifth_section;
-        form4.reviews = data.fifth_section?.reviews;
-        break;
-      case 'sixthSection':
-        form5.sixth_section = data.sixth_section;
+      case 'workresult':
+        form4.workresult = data.workresult;
         break;
     }
 
-    form1.deviation = data.deviation;
+    form.report = data.report;
     currentSection.value = section;
   } catch (error) {
     console.error(error);
@@ -219,12 +631,30 @@ const fetch = async (section = 'firstSection', deviation) => {
   }
 };
 
+const shouldShowGroup = (item, index) => {
+  if (index === 0) return true;
+  return form1.results[index - 1].group_name !== item.group_name;
+};
+
+const getGroupCount = (groupName) => {
+  return form1.results.filter(i => i.group_name === groupName).length;
+};
+
+const isLastInGroup = (index) => {
+  const current = form1.results[index];
+  const next = form1.results[index + 1];
+
+  return !next || next.group_name !== current.group_name;
+};
+
 onMounted(() => {
   form.reported_date = new Date().toISOString().slice(0, 10);
 });
 
-const submit = () => form.id ? update() : store()
-const submit2 = () => form1.id ? sectionTwoSave() : update()
+const formatDate = (date) => {
+  if (!date) return '-'
+  return new Date(date).toOnlyIndonesianDate()
+}
 
 const esc = e => e.key === 'Escape' && close()
 onMounted(() => window.addEventListener('keydown', esc))
@@ -236,7 +666,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
 <template>
   
-  <DashboardLayout :title="__('Working Report')">
+  <DashboardLayout :title="__('Working Order')">
     <div
       class="transition-all duration-300"
       :class="{
@@ -244,8 +674,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
       }"
     >
       <main class="p-0 py-0">
-        <h2 class="font-bold">Working Report</h2>
-        <p class="font-semibold">Halaman Detail Working Report </p>
+        <h2 class="font-bold">Working Order</h2>
+        <p class="font-semibold">Halaman Detail Working Order </p>
         <slot />
       </main>
     </div>
@@ -257,66 +687,62 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
           </div>
 
           <div class="rounded-md gap-2 w-full md:w-auto">
-            <ButtonBlue class="font-semibold">
-              <!-- {{ report.status }} -->
-            </ButtonBlue>
+            <Button class="bg-red-700 text-white-800 px-4 py-2 rounded-md hover:bg-red-500">
+              <Icon name="warning" class="w-6 h-4"/> |
+              <!-- {{ report.status }} -->Lapor Gangguan
+            </Button>
           </div>
         </div>
       </template>
 
       <template #body>
       <div class="flex flex-col space-y-4 p-4">
-        <!-- <template v-if="hasRole (['superuser', 'supervisor penyimpangan', 'pelaksana penyimpangan', 'user', 'asman', 'spv', 'ampr', 'mpm', 'risk assessment', 'Manager'])"> -->
           
         <div class="flex flex-col space-y-4 p-4">
-          <div class="text-center">
+          <!-- <div class="text-center">
             <label for="name" class="first-letter:capitalize font-bold">
               {{ __('Formulir Laporan Pekerjaan') }}<br>
               {{ __('Tanggal') }}
-              <!-- <span v-if="deviation.registration_number">{{ deviation.registration_number }}</span>
-              <span v-else>Belum diberi nomor</span> -->
             </label>
-          </div>
+          </div> -->
 
-          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-0 md:space-x-0">
-            <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'workingreport' }">
-              <!-- <a 
-                href="#list-section1" id="list-section1-list" data-toggle="list" role="tab" aria-controls="section1" class="list-group-item list-group-item-action active" 
-                @click.prevent="fetch('firstSection', deviation)" 
-              > -->
-                <p :class="{ 'text-white': currentSection === 'firstSection' }">Working Report</p>
-              <!-- </a> -->
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-0">
+            <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'report' }">
+              <a 
+                href="#list-report" id="list-report-list" data-toggle="list" role="tab" aria-controls="report" class="list-group-item list-group-item-action active" 
+                @click.prevent="fetch('report', report)" 
+              >
+                <p :class="{ 'text-white': currentSection === 'report' }">Working Order</p>
+              </a>
             </div>
 
-            <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'checksheet' }">
-              <!-- <a 
-                href="#list-section2" id="list-section2-list" data-toggle="list" role="tab" aria-controls="section2" class="list-group-item list-group-item-action"
-                :class="{ 'disabled': !deviation.first_section?.ampr_responded_at, 'active': currentSection === 'secondSection' }" 
-                @click.prevent="!deviation.first_section?.ampr_responded_at ? null : fetch('secondSection', deviation)" 
-              > -->
-                <p :class="{ 'text-white': currentSection === 'secondSection' }">Check Sheet
+            <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'checksheetday' }">
+              <a 
+                href="#list-checksheetday" id="list-checksheetday-list" data-toggle="list" role="tab" aria-controls="checksheetday"  class="list-group-item list-group-item-action d-flex justify-content-between" 
+                :class="! report.sectionFiveOpen ? 'disabled' : ''"
+                @click.prevent="fetch('checksheetday', report)" 
+              >
+                <p :class="{ 'text-white': currentSection === 'checksheetday' }">Check Sheet
                   <!-- <i v-if="!deviation.first_section?.ampr_responded_at" class="fas fa-info-circle" 
                     data-toggle="tooltip" title="Penyimpangan yang belum di registrasi dan di disposisi oleh AMPR tidak dapat mengakses Section 2.">
                   </i> -->
                 </p>
-              <!-- </a> -->
+              </a>
             </div>
 
             <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'warmingup' }">
-              <!-- <a 
-                href="#list-section2" id="list-section2-list" data-toggle="list" role="tab" aria-controls="section2" class="list-group-item list-group-item-action"
-                :class="{ 'disabled': !deviation.first_section?.ampr_responded_at, 'active': currentSection === 'secondSection' }" 
-                @click.prevent="!deviation.first_section?.ampr_responded_at ? null : fetch('secondSection', deviation)" 
-              > -->
-                <p :class="{ 'text-white': currentSection === 'secondSection' }">Warming Up
+              <a 
+                href="#list-warmingup" id="list-warmingup-list" data-toggle="list" role="tab" aria-controls="warmingup"  class="list-group-item list-group-item-action d-flex justify-content-between" 
+                :class="! report.sectionFiveOpen ? 'disabled' : ''"
+                @click.prevent="fetch('warmingup', report)" 
+              >
+                <p :class="{ 'text-white': currentSection === 'warmingup' }">Warming Up
                   <!-- <i v-if="!deviation.first_section?.ampr_responded_at" class="fas fa-info-circle" 
                     data-toggle="tooltip" title="Penyimpangan yang belum di registrasi dan di disposisi oleh AMPR tidak dapat mengakses Section 2.">
                   </i> -->
                 </p>
-              <!-- </a> -->
-            </div>
-
-            
+              </a>
+            </div>            
 
             <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'uploadfoto' }">
               <!-- <a 
@@ -324,7 +750,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 :class="{ 'disabled': !deviation.first_section?.ampr_responded_at, 'active': currentSection === 'secondSection' }" 
                 @click.prevent="!deviation.first_section?.ampr_responded_at ? null : fetch('secondSection', deviation)" 
               > -->
-                <p :class="{ 'text-white': currentSection === 'secondSection' }">Upload Foto
+                <p :class="{ 'text-white': currentSection === 'uploadfoto' }">Upload Foto
                   <!-- <i v-if="!deviation.first_section?.ampr_responded_at" class="fas fa-info-circle" 
                     data-toggle="tooltip" title="Penyimpangan yang belum di registrasi dan di disposisi oleh AMPR tidak dapat mengakses Section 2.">
                   </i> -->
@@ -333,52 +759,113 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             </div>
 
             <div class="border border-gray-300 p-1 w-full" :class="{ 'bg-blue-600': currentSection === 'workresult' }">
-              <!-- <a 
-                href="#list-section2" id="list-section2-list" data-toggle="list" role="tab" aria-controls="section2" class="list-group-item list-group-item-action"
-                :class="{ 'disabled': !deviation.first_section?.ampr_responded_at, 'active': currentSection === 'secondSection' }" 
-                @click.prevent="!deviation.first_section?.ampr_responded_at ? null : fetch('secondSection', deviation)" 
-              > -->
-                <p :class="{ 'text-white': currentSection === 'secondSection' }">Laporan Pekerjaan
-                  <!-- <i v-if="!deviation.first_section?.ampr_responded_at" class="fas fa-info-circle" 
-                    data-toggle="tooltip" title="Penyimpangan yang belum di registrasi dan di disposisi oleh AMPR tidak dapat mengakses Section 2.">
+              <a 
+                href="#list-workresult" id="list-workresult-list" data-toggle="list" role="tab" aria-controls="workresult"  class="list-group-item list-group-item-action d-flex justify-content-between" 
+                :class="! report.sectionFiveOpen ? 'disabled' : ''"
+                @click.prevent="fetch('workresult', report)" 
+              >
+                <p>Work Result
+                  <!-- <i v-if="! deviation.fourth_section?.plan_approved_at" class="fas fa-info-circle" data-toggle="tooltip" 
+                    :data-original-title="deviation.sectionFiveNote">
                   </i> -->
                 </p>
-              <!-- </a> -->
+              </a>
             </div>
             <!-- END -->
 
           </div>
         </div>
 
-        <div class="flex flex-col md:flex-row mt-2 md:space-y-0 md:space-x-0 md:space-x-0">
+        <div class="flex flex-col md:flex-row mt-2 md:space-y-0 md:space-x-0">
           <div class="border border-black p-2 w-full" id="list-section1" role="tabpanel" aria-labelledby="list-section1-list">
           <div class="flex flex-col space-y-2"> 
             
-            <!-- section 1 -->             
-					  <div v-if="currentSection === 'workingreport'" class="tab-pane fade show active p-2" id="list-section1" role="tabpanel" aria-labelledby="list-section1-list">
+            <!-- section working report -->             
+					  <div v-if="currentSection === 'report'" class="tab-pane fade show active p-2" id="list-report" role="tabpanel" aria-labelledby="list-report-list">
             <!-- <div v-if="! deviation.first_section.ampr_responded_at" class="tab-pane fade show active p-2" id="list-section1" role="tabpanel" aria-labelledby="list-section1-list"> -->
             <!-- <div class="tab-pane fade show active p-2" id="list-section1" role="tabpanel" aria-labelledby="list-section1-list"> -->
               <div class="flex flex-col space-y-4 p-4">
-                <div class="flex items-center space-x-2">
-                  <label for="name" class="w-1/3 first-letter:capitalize font-semibold">
-                    {{ __('Nama Mesin') }}
-                  </label>
-                  <div>{{ __(report.machine?.name ?? '-') }}</div>
+                
+                <div class="row my-2">
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="machine_id" class="w-1/3">
+                        {{ __('Nama Mesin') }}
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Select
+                            v-model="form.machine_id"
+                            :options="machines.map(machine => ({
+                              label: `${machine.name} — ${machine.type}`,
+                              value: machine.id,
+                            }))"
+                            :searchable="true"
+                            placeholder="Pilih Mesin"
+                            required
+                          />
+                        </div>
+                    </div>
+
+                    <InputError
+                      :error="form.errors.machine_id"
+                    />
+                  </div> 
                 </div>
 
-                <div class="flex items-center space-x-2">
-                  <label for="name" class="w-1/3 first-letter:capitalize font-semibold">
-                    {{ __('Wilayah') }}
-                  </label>
-                  <div>{{ __(report.region?.name ?? '-') }}</div>
+
+                <div class="row my-2">
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="region_id" class="w-1/3">
+                        {{ __('Nama Wilayah') }}
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Select
+                            v-model="form.region_id"
+                            :options="regions.map(region => ({
+                              label: region.name,
+                              value: region.id,
+                            }))"
+                            :searchable="true"
+                            placeholder="Pilih Wilayah"
+                            required
+                          />
+                        </div>
+                    </div>
+
+                    <InputError
+                      :error="form.errors.region_id"
+                    />
+                  </div> 
                 </div>
-                                
-                <div class="flex items-center space-x-2">
-                  <label for="name" class="w-1/3 first-letter:capitalize font-semibold">
-                    {{ __('Tanggal') }}
-                  </label>
-                  <div>{{ new Date(report?.date).toOnlyIndonesianDate() }}</div>
-                </div>
+
+                <div class="row my-2">
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="date" class="w-1/3 lowercase first-letter:capitalize">
+                        {{ __('Tanggal') }}
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Input
+                            v-model="form.date"
+                            :placeholder="__('Tanggal')"
+                            type="datetime-local"
+                          />
+                        </div>
+                        
+                      <template>
+                        <div class="w-2/3">
+                          <div>{{ new Date(report?.date).toOnlyIndonesianDate() }}</div>
+                        </div>
+                      </template>
+
+                    </div>
+                    <InputError :error="form.errors.date" />
+                  </div>
+              </div>
                 
                 <div class="flex items-center space-x-2">
                   <label for="name" class="w-1/3 first-letter:capitalize font-semibold">
@@ -394,736 +881,1281 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   <div>{{ report.status }}</div>
                 </div>
 
-                <!-- <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label class="w-1/3 first-letter:capitalize font-semibold">
-                      {{ __('Bukti Tambahan') }}
-                    </label>
-
-                    <BtnAttachment
-                      :model="firstSection"
-                      type="First_Section"
-                      :redaction="`Lampiran`"
-                      :closed="false"
-                    />
-
-                  </div>
-                </div>
-                <div>
-                  <div class="flex flex-col space-y-2">
-                    <div class="flex items-center space-x-2 my-2">
-                      <p style="color:white; font-size: 0.7rem;  margin-top: -2rem;" class="w-1/3">Note</p>
-                      
-                      <p style="color: black; font-size: 0.7rem;  margin-top: -2rem; text-align: center;">
-                        Format file yang didukung : <lable style="color: black; font-size: 0.8rem;  margin-top: -1rem; text-align: center;" class="font-bold">PNG, JPG, PDF, DOC, DOCX, XLS, XLSX, RAR, ZIP (Max : 5 MB / file)</lable>
-                      </p>
-                    </div>
-                  </div>
-                </div> -->
                 <hr>
               </div>
-
-              <!-- <form @submit.prevent="submit" class="w-full max-w-x8 h-fit shadow-xl">
-                <Card class="bg-gray-50 dark:bg-gray-700 dark:text-gray-100">
-                  <template #body>
-                    <div class="flex flex-col space-y-4 p-4">
-                      <template v-if="isComplianceMember && ! deviation.first_section?.ampr_responded_at">
-
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="registration_number" class="w-1/2 lowercase first-letter:capitalize">
-                              {{ __('Nomor Registrasi') }}
-                            </label>
-                            <Input
-                              v-model="form.registration_number"
-                              :placeholder="__('Nomor Registrasi')"
-                              type="text"
-                              required
-                            />
-                          </div>
-                          <InputError :error="form.errors.registration_number" />
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="reported_date" class="w-1/2 capitalize">
-                              {{ __('Tanggal dilaporkan') }}
-                            </label>
-                            <Input
-                              v-model="form.reported_date"
-                              :placeholder="__('Tanggal Dilaporkan')"
-                              type="date"
-                              required
-                              readonly
-                            />
-                          </div>
-                          <InputError :error="form.errors.reported_date" />
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="reporting_delay" class="w-1/2 capitalize">
-                              {{ __('Keterlambatan Laporan') }}
-                            </label>
-                            <Select
-                              v-model="form.reporting_delay"
-                              :options="[
-                                { label: 'Ada', value: '1' },
-                                { label: 'Tidak Ada', value: '0' }
-                              ]"
-                              :searchable="true"
-                              :placeholder="__('Keterlambatan Laporan')"
-                              required
-                            />
-                          </div>
-                          <InputError :error="form.errors.reporting_delay" />
-                        </div>
-
-                        <div v-if="form.reporting_delay === '1'" class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="delay_impact" class="w-1/2 capitalize">
-                              {{ __('Dampak Keterlambatan Respon') }}
-                            </label>
-                            <Select
-                              v-model="form.delay_impact"
-                              :placeholder="__('Dampak Keterlambatan Respon')"
-                              :options="[
-                                { label: 'Kegagalan Proses', value: 'Kegagalan Proses' },
-                                { label: 'Terhambatnya Proses', value: 'Terhambatnya Proses' },
-                                { label: 'Timbul Penyimpangan Lainnya', value: 'Timbul Penyimpangan Lainnya' },
-                                { label: 'Tidak ada dampak yang signifikan secara mutu', value: 'Tidak ada dampak yang signifikan secara mutu' }
-                              ]"
-                            />
-                          </div>
-                          <InputError :error="form.errors.delay_impact" />
-                        </div>
-                        
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="responsibles_id" class="w-1/2">
-                              {{ __('Pihak Terkait untuk Diinformasikan') }}
-                            </label>
-                            <Select
-                              v-model="form.responsibles_id"
-                              :options="users.map(user => ({
-                                label: user.name,
-                                value: user.id,
-                              }))"
-                              :searchable="true"
-                              mode="tags"
-                              placeholder="Pilih Penanggung Jawab"
-                              required
-                            />
-                          </div>
-                          <InputError :error="form.errors.responsibles_id" />
-                        </div>
-
-                        <hr>
-
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="name" class="w-1/2 capitalize">
-                              {{ __('Disposisi oleh AMPR') }}
-                            </label>
-                            <TextArea
-                              v-model="form.ampr_note"
-                              :placeholder="__('Disposisi oleh AMPR')"
-                              type="text"
-                            />
-                          </div>
-                          <InputError :error="form.errors.ampr_note" />
-                        </div>
-
-                      </template>
-                      <template v-else>
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.reviewed_by" class="flex items-center space-x-2">
-                            <label for="reviewed_by" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Review Oleh') }}
-                            </label>
-                            <div>
-                              {{ __(deviation.first_section.reviewer.name) }} ({{ deviation.first_section.reviewer.jabatan }})
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.reported_date" class="flex items-center space-x-2">
-                            <label for="reported_date" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Tanggal Dilaporkan') }}
-                            </label>
-                            <div>{{ new Date(deviation.first_section.reported_date).toOnlyIndonesianDate('id') }}</div>
-                          </div>
-                        </div>
-                        
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.delay_impact" class="flex items-center space-x-2">
-                            <label for="delay_impact" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Keterlambatan Laporan') }}
-                            </label>
-                            <div>
-                              {{ __(deviation.first_section.delay_impact) }}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.responsibles?.length > 0" class="flex items-center space-x-2">
-                            <label for="responsibles" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Pihak Terkait untuk Diinformasikan') }}
-                            </label>
-                            <div class="flex flex-col">
-                              <ul>
-                                <li v-for="(responsible, index) in deviation.responsibles">{{ index + 1 }}. {{ responsible.name }} ({{ responsible.jabatan }})</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.ampr_responded_at" class="flex items-center space-x-2">
-                            <label for="ampr_note" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Disposisi oleh AMPR') }}
-                            </label>
-                            <div>
-                              {{ __(deviation.first_section.ampr_note) }}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.spkp_responded_at" class="flex items-center space-x-2">
-                            <label for="spkp_responded_at" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Review SPKP pada') }}
-                            </label>
-                            <div>{{ new Date(deviation.first_section.spkp_responded_at).toOnlyIndonesianDate('id') }}</div>
-                          </div>
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div v-if="deviation.first_section?.ampr_responded_at" class="flex items-center space-x-2">
-                            <label for="ampr_responded_at" class="w-1/3 first-letter:capitalize font-semibold">
-                              {{ __('Reveiew AMPR pada') }}
-                            </label>
-                            <div>{{ new Date(deviation.first_section.ampr_responded_at).toOnlyIndonesianDate('id') }}</div>
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                    
-                    <div class="flex items-center space-x-2 p-2 justify-end">
-                      <ButtonBlue type="submit" v-if="isSpkp && !deviation.first_section?.spkp_responded_at">
-                        <p class="uppercase font-semibold">
-                          {{ __(form.id ? 'Paraf SPV Peyimpangan' : 'laporkan') }}
-                        </p>
-                      </ButtonBlue>
-                      
-                      <ButtonBlue type="submit" v-if="isAmpr && deviation.first_section?.spkp_responded_at && !deviation.first_section.ampr_responded_at">
-                        <p class="uppercase font-semibold">
-                          {{ __(form.id ? 'Paraf Asman Pemenuhan Regulasi' : 'laporkan') }}
-                        </p>
-                      </ButtonBlue>
-
-                      <ButtonGreen type="submit" v-if="isComplianceMember && ! isAmpr && ! isSpkp && ! deviation.first_section?.ampr_responded_at">
-                        <p class="uppercase font-semibold">
-                          {{ __(form.id ? 'Register' : 'laporkan') }}
-                        </p>
-                      </ButtonGreen>
-                    </div>
-                      
-                  </template>
-                </Card>
-              </form> -->
             </div>
-            <!-- section 1 -->
+            <!-- section working report -->
 
-            <!-- section 2 --> 
-						<!-- <div v-if="currentSection === 'secondSection'" class="tab-pane fade p-2" id="list-section2" role="tabpanel" aria-labelledby="list-section2-list">
-              <form 
-                @submit.prevent="submit2" 
-                class="w-full max-w-x8 h-fit shadow-xl">
-                <Card class="bg-gray-50 dark:bg-gray-700 dark:text-gray-100">
-                  <template #body>
-                    <div class="flex flex-col space-y-4 p-4">
+            <!-- section checksheetday -->
+            <div v-if="currentSection === 'checksheetday'" class="tab-pane fade p-2" id="list-checksheetday" role="tabpanel" aria-labelledby="list-checksheetday-list">
 
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="immediate_action" class="w-1/3 lowercase first-letter:capitalize">
-                              {{ __('Tindakan Segera yang diambil') }}
-                            </label>
-                            
-                            <template v-if="(isResponsible || isComplianceMember && ! deviation.second_section?.reviewed_at)">
-                              <div class="w-2/3">
-                                <TextArea
-                                  v-model="form1.immediate_action"
-                                  :placeholder="__('Tindakan Segera yang diambil')"
-                                  type="text"
-                                />
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div class="w-2/3">
-                                <span>{{ deviation.second_section?.immediate_action }}</span>
-                              </div>
-                            </template>
+							<!-- Bagian Informasi Mesin -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Jenis / Tipe KPJR</label>
+                  <!-- <input v-model="form1.upt_resor" type="text" placeholder="Jam Genset" class="w-2/3 border border-black px-1 py-0.5" /> -->
+                  <Input v-model="form1.jenis" :placeholder="__('Jenis / Tipe KPJR')" required type="text" class="w-2/3" />
+                  <InputError :error="form1.errors.jenis" />
+                </div>
 
-                          </div>
-                          <InputError :error="form1.errors.immediate_action" />
-                        </div>
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Hari / Tanggal</label>
+                  <Input v-model="form1.tanggal" required type="date" class="w-2/3"/>
+                  <InputError :error="form1.errors.tanggal" />
+                </div>
+                
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Jam Mesin</label>
+                  <Input v-model="form1.jam_mesin" :placeholder="__('Jam Mesin')" required type="time" step="1" class="w-2/3" />
+                  <InputError :error="form1.errors.jam_mesin" />
+                </div>
 
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="justification_of_action" class="w-1/3 lowercase first-letter:capitalize">
-                              {{ __('Alasan Pengambilan Tindakan Segera') }}
-                            </label>
-                            
-                            <template v-if="(isResponsible || isComplianceMember && ! deviation.second_section?.reviewed_at)">
-                              <div class="w-2/3">
-                                <TextArea
-                                  v-model="form1.justification_of_action"
-                                  :placeholder="__('Alasan Pengambilan Tindakan Segera')"
-                                  type="text"
-                                />
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div class="w-2/3">
-                                <span>{{ deviation.second_section?.justification_of_action }}</span>
-                              </div>
-                            </template>
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Lokasi Pelaksanaan</label>
+                  <Input v-model="form1.lokasi" required type="text" :placeholder="__('Lokasi Pelaksanaan')" class="w-2/3"/>
+                  <InputError :error="form1.errors.lokasi" />
+                </div>
 
-                          </div>
-                          <InputError :error="form1.errors.justification_of_action" />
-                        </div>  
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Counter Pecok</label>
+                  <Input v-model="form1.counter_pecok" required type="number" :placeholder="__('Counter Pecok')" class="w-2/3"/>
+                  <InputError :error="form1.errors.counter_pecok" />
+                </div>
 
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                            <label for="date_of_action" class="w-1/3 lowercase first-letter:capitalize">
-                              {{ __('Tanggal Pelaksanaan Tindakan') }}
-                            </label>
-                            
-                            <template v-if="(isResponsible || isComplianceMember && ! deviation.second_section?.reviewed_at)">
-                              <div class="w-2/3">
-                                <Input
-                                  v-model="form1.date_of_action"
-                                  type="date"
-                                />
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div class="w-2/3">
-                                <span>{{ new Date (deviation.second_section?.date_of_action).toOnlyIndonesianDate() }}</span>
-                              </div>
-                            </template>
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Wilayah Resort</label>
+                  <Input v-model="form1.wilayah" required type="text" :placeholder="__('Wilayah Resort')" class="w-2/3"/>
+                  <InputError :error="form1.errors.wilayah" />
+                </div>
 
-                          </div>
-                          <InputError :error="form1.errors.date_of_action" />
-                        </div>
-                        
-                        <table class="table-auto w-full">
-                          <tr style="background-color: #e1f5fe;">
-                            <th colspan="3" class="uppercase center">Analisis Resiko Dampak</th>
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Kilometer Mesin</label>
+                  <Input v-model="form1.kilometer_mesin" required type="number" :placeholder="__('Kilometer Mesin')" class="w-2/3"/>
+                  <InputError :error="form1.errors.kilometer_mesin" />
+                </div>
+
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">Daop / Divre</label>
+                  
+                  <div class="w-2/3">
+                  <Select
+                    v-model="form1.region_id"
+                    :options="regions.map(region => ({
+                      label: region.name,
+                      value: region.id,
+                    }))"
+                    :searchable="true"
+                    placeholder="Pilih Daop / Divre"
+                    required
+                  />
+                  <InputError :error="form1.errors.region_id" />
+                  </div>
+                </div>
+                
+                <div class="flex items-center">
+                  <label class="w-1/3 font-semibold">No Seri</label>
+                  <Input v-model="form1.no_seri" required type="number" :placeholder="__('No Seri')" class="w-2/3"/>
+                  <InputError :error="form1.errors.no_seri" />
+                </div>
+
+              </div>
+              
+							<div class="d-flex justify-content-end mt-3">
+							<!-- <div v-if="isComplianceMember || isMpm" class="d-flex justify-content-end mt-3"> -->
+								<!-- <Button v-if="isSpkp && ! deviation.sixth_section?.spkp_signed_at" @click.prevent="approveSixthSection('spkp')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf SPV Penyimpangan</Button>
+								<Button v-if="isAmpr && ! deviation.sixth_section?.ampr_signed_at && deviation.sixth_section?.spkp_signed_at" @click.prevent="approveSixthSection('ampr')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf Asman Pemenuhan Regulasi</Button>
+								<Button v-if="isMpm && ! deviation.sixth_section?.mpm_signed_at && deviation.sixth_section?.ampr_signed_at" @click.prevent="approveSixthSection('mpm')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf Manager Pemastian Mutu</Button> -->
+								<Button v-if="!report.checksheetday?.id" class="bg-green-700 hover:bg-green-900 float-right mr-2" @click.prevent="submitchecksheetday()">Simpan</Button>
+                <Button v-else class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updatechecksheetday()">Ubah</Button>
+							</div>
+              <br>
+              <br>
+              <hr>
+
+              <!-- Tabel Unit Komponen -->
+              <div class="overflow-x-auto">
+                <table class="table-auto border-collapse border border-black w-full text-xs">
+                  <thead class="bg-gray-300 text-black">
+                    <tr>
+                      <th colspan="4" rowspan="2" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold">
+                        Perawatan Harian
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center align-middle bg-gray-200 font-bold w-[60px] h-[10px] ">
+                        <div class="rotate-[-90deg] origin-bottom whitespace-nowrap flex justify-center items-center h-full">Cek</div>
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center align-middle bg-gray-200 font-bold w-[45px] h-[10px] ">
+                        <div class="rotate-[-90deg] origin-bottom whitespace-nowrap flex justify-center items-center h-full">Tambah</div>
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center align-middle bg-gray-200 font-bold w-[45px] h-[10px] ">
+                        <div class="rotate-[-90deg] origin-bottom whitespace-nowrap flex justify-center items-center h-full">Ganti</div>
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold">
+                        Nilai Rujukan
+                      </th>
+                      <th colspan="2" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold">
+                        Hasil Pemeriksaan
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold">
+                        Sat.
+                      </th>
+                      <th rowspan="2" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold">
+                        App.
+                      </th>
+                    </tr>
+                    <tr>
+                      <!-- <th colspan="3" class="border border-black px-2 py-1 text-center bg-gray-200 font-bold w-12"></th> -->
+                      <th class="border border-black px-2 py-1 text-center bg-gray-200 font-bold w-10">Kr/Dpn</th>
+                      <th class="border border-black px-2 py-1 text-center bg-gray-200 font-bold w-10">Kn/Dpn</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in form1.results"
+                      :key="index"
+                      :class="{'border-b-4 border-black': isLastInGroup(index)}"
+                    >
+                      <td
+                        v-if="shouldShowGroup(item, index)"
+                        :rowspan="getGroupCount(item.group_name)"
+                        class="border border-black px-2 py-1 font-bold align-center bg-gray-200 w-[200px]"
+                      >                          
+                        <div class="rotate-[-90deg] origin-bottom whitespace-nowrap flex justify-center items-center h-full">{{ item.group_name }}</div>
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center w-10">
+                        {{ item.urutan }}
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-left w-64">
+                        {{ item.komponen }}
+                      </td>
+
+                      <td class="border border-black px-2 py-1 w-36 text-center">
+                        {{ item.rujukan }}
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center">
+                        <input
+                          type="checkbox"
+                          :checked="item.cek == 1"
+                          @change="toggleResult(item, 'cek')"
+                        />
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center">
+                        <input
+                          type="checkbox"
+                          :checked="item.tambahan == 1"
+                          @change="toggleResult(item, 'tambahan')"
+                        />
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center">
+                        <input
+                          type="checkbox"
+                          :checked="item.ganti == 1"
+                          @change="toggleResult(item, 'ganti')"
+                        />
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center italic w-24">
+                        {{ item.nilai_rujukan }}
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center w-24">
+                        <input
+                          v-model="item.kiri_depan"
+                          type="text"
+                          placeholder="...."
+                          class="w-full focus:ring-0 text-center"
+                          @change="saveTextField(item)"
+                        />
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center w-24">
+                        <input
+                          v-model="item.kanan_depan"
+                          type="text"
+                          placeholder="...."
+                          class="w-full focus:ring-0 text-center"
+                          @change="saveTextField(item)"
+                        />
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center w-24">
+                        {{ item.satuan }}
+                      </td>
+
+                      <td class="border border-black px-2 py-1 text-center w-24">
+                        <input
+                          v-model="item.keterangan"
+                          type="text"
+                          placeholder="...."
+                          @change="saveTextField(item)"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <br><br>
+                
+                <!-- Tabel Catatan -->
+                <tfoot>
+                  <tr>
+                    <td colspan="9" class="border border-black align-top px-2 py-1 font-semibold text-sm w-[70%]">
+                      Catatan riwayat gangguan :
+                      <textarea
+                        v-model="form2.catatan_gangguan"
+                        class="w-full border-none focus:ring-0 text-sm resize-none mt-1"
+                        rows="9"
+                        placeholder="Tuliskan catatan riwayat gangguan di sini..."
+                        @change="saveWorkResult"
+                      ></textarea>
+                    </td>
+
+                    <td colspan="4" class="border border-black align-top px-0 py-0 w-[30%]">
+                      <table class="w-full border-collapse">
+                        <thead>
+                          <tr>
+                            <th colspan="6" class="border border-black bg-gray-200 text-center font-semibold py-1">
+                              Hasil Kerja:
+                            </th>
+                          </tr>
+                          <tr class="bg-gray-100 text-center font-semibold text-sm">
+                            <th colspan="3" class="border border-black px-2 py-1 w-[70%]">Lokasi dan Jam beroperasi</th>
+                            <th class="border border-black px-2 py-1 w-[15%]">hu / hi</th>
+                            <th class="border border-black px-2 py-1 w-[15%]">Jumlah</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colspan="3" class="border border-black px-2 py-1 text-left">
+                              <input
+                                v-model="form2.lokasi_dan_jam1"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-sm"
+                                placeholder="Isi lokasi dan jam beroperasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.hu_hi_1"
+                                type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.jumlah_1"
+                                type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
+                              />
+                            </td>
                           </tr>
                           <tr>
-                            <td style="text-align: left;">Apakah penyimpangan memiliki impact terhadap Protap / CPOB / Spesifikasi / Aturan lainnya ?</td>
-                            <td style="width:10%">
-                              <template v-if="(isResponsible || isComplianceMember)">
-                                <label class="mr-2">
-                                  <input v-model="form1.impacting_other_rules" @change="defineLevel()" value="1" type="radio" class="form-check-input">
-                                  <span>Iya</span>
-                                </label>
-                                <label>
-                                  <input v-model="form1.impacting_other_rules" @change="defineLevel()" value="0" type="radio" class="form-check-input">
-                                  <span>Tidak</span>
-                                </label>
-                              </template>
-                              <template v-else>
-                                <span class="font-weight-semibold justify-end text-right"> {{ form1?.impacting_other_rules == 1 ? 'Iya': 'Tidak' }} </span>
-                              </template>
-                            </td>
-                          </tr>
-                          <tr v-if="form1?.impacting_other_rules == 1">
-                            <td style="text-align: left;">Apakah penyimpangan memiliki impact langsung signifikan terhadap Keamanan Pasien? </td>
-                            <td>
-                              <template v-if="(isResponsible || isComplianceMember)">
-                                <label class="mr-2">
-                                  <input v-model="form1.impacting_to_patient" @change="defineLevel()" value="1" type="radio" class="form-check-input">
-                                  <span>Iya</span>
-                                </label>
-                                <label>
-                                  <input v-model="form1.impacting_to_patient" @change="defineLevel()" value="0" type="radio" class="form-check-input">
-                                  <span>Tidak</span>
-                                </label>
-                              </template> 
-                              <template v-else>
-                                <span class="font-weight-semibold"> {{ form1?.impacting_to_patient == 1 ? 'Iya': 'Tidak' }} </span>
-                              </template>
-                            </td>
-                          </tr>
-                          <tr v-if="form1?.impacting_other_rules == 1 && form1?.impacting_to_patient == 0">
-                            <td style="text-align: left;">Apakah penyimpangan memiliki impact langsung signifikan terhadap Efikasi dan Critical Quality Attributes (produk dan material) ? </td>
-                            <td>
-                              <template v-if="(isResponsible || isComplianceMember)">
-                                <label class="mr-2">
-                                  <input v-model="form1.impacting_cqa" @change="defineLevel()" value="1" type="radio" class="form-check-input">
-                                  <span>Iya</span>
-                                </label>
-                                <label>
-                                  <input v-model="form1.impacting_cqa" @change="defineLevel()" value="0" type="radio" class="form-check-input">
-                                  <span>Tidak</span>
-                                </label>
-                              </template>
-                              <template v-else>
-                                <span class="font-weight-semibold"> {{ form1?.impacting_cqa == 1 ? 'Iya': 'Tidak' }} </span>
-                              </template>
-                            </td>
-                          </tr>
-                        </table>
-
-                        <div class="flex flex-col space-y-3">
-                          <div class="flex items-center space-x-3">
-                            <label for="impact_to_others" class="w-1/3 lowercase first-letter:capitalize">
-                              {{ __('Dampak terhadap batch / produk / peralatan / fasilitas lainnya') }}
-                            </label>
-                            
-                            <template v-if="(isResponsible || isComplianceMember) && ! deviation.second_section?.reviewed_at">
-                              <div class="w-2/3">
-                                <TextArea
-                                  v-model="form1.impact_to_others"
-                                  :placeholder="__('Dampak terhadap batch / produk / peralatan / fasilitas lainnya')"
-                                  type="text"
-                                />
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div class="w-2/3">
-                                <span>{{ deviation.second_section?.impact_to_others }}</span>
-                              </div>
-                            </template>                            
-
-                          </div>
-                          <InputError :error="form1.errors.impact_to_others" />
-                        </div>
-
-                        <div class="flex flex-col space-y-2">
-                          <div class="flex items-center space-x-2">
-                              <label for="initial_level" class="w-1/3">
-                                  {{ __('Kesimpulan Klasifikasi Awal Level Penyimpangan') }}
-                              </label>
-
-                              <template v-if="(isResponsible || isComplianceMember) && ! deviation.second_section?.reviewed_at">
-                                <div class="form-check flex flex-col">
-                                  <div class="flex items-start">
-                                    <input class="form-check-input mt-1" type="radio" value="RC" id="initial_level1" name="initial_level" v-model="form1.initial_level">
-                                    <label class="form-check-label ml-2" for="initial_level1"> RC(Required Correction) </label>
-                                  </div>
-                                  <div class="flex items-start">
-                                    <input class="form-check-input mt-1" type="radio" value="Minor" id="initial_level2" name="initial_level" v-model="form1.initial_level">
-                                    <label class="form-check-label ml-2" for="initial_level2"> Minor </label>
-                                  </div>
-                                  <div class="flex items-start">
-                                    <input class="form-check-input mt-1" type="radio" value="Mayor" id="initial_level3" name="initial_level" v-model="form1.initial_level">
-                                    <label class="form-check-label ml-2" for="initial_level3"> Mayor </label>
-                                  </div>
-                                  <div class="flex items-start">
-                                    <input class="form-check-input mt-1" type="radio" value="Critical" id="initial_level4" name="initial_level" v-model="form1.initial_level">
-                                    <label class="form-check-label ml-2" for="initial_level4"> Critical </label>
-                                  </div>
-                                </div>
-                              </template>
-                              <template v-else>
-                                <span v-if="deviation.second_section?.initial_level === 'RC'" class="p-1 bg-green-500 rounded"> RC (Required Correction) </span>
-                                <span v-else-if="deviation.second_section?.initial_level === 'Minor'" class="p-1 bg-blue-500 rounded"> Minor </span>
-                                <span v-else-if="deviation.second_section?.initial_level === 'Mayor'" class="p-1 bg-yellow-500 rounded"> Mayor </span>
-                                <span v-else-if="deviation.second_section?.initial_level === 'Critical'" class="p-1 bg-red-500 rounded"> Critical </span>
-                              </template>
-
-                          </div>
-                          <InputError :error="form1.errors['initial_level']" />
-                      </div>
-
-                      <div v-if="form1.initial_level === 'RC'" class="flex flex-col space-y-3">
-                        <div class="flex items-center space-x-3">
-                          <label for="potential_rootcause" class="w-1/3 lowercase first-letter:capitalize">
-                            {{ __('Dugaan Penyebab') }}
-                          </label>
-                          
-                          <template v-if="(isResponsible || isComplianceMember) && ! deviation.second_section?.reviewed_at">
-                            <div class="w-2/3">
-                              <TextArea
-                                v-model="form1.potential_rootcause"
-                                :placeholder="__('Dugaan Penyebab')"
+                            <td colspan="3" class="border border-black px-2 py-1 text-left">
+                              <input
+                                v-model="form2.lokasi_dan_jam2"
                                 type="text"
+                                class="w-full border-none focus:ring-0 text-sm"
+                                placeholder="Isi lokasi dan jam beroperasi"
+                                @change="saveWorkResult"
                               />
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="w-2/3">
-                              <span class="flex-grow">{{ deviation.second_section?.potential_rootcause }}</span>
-                            </div>
-                          </template>
-                        </div>
-                        <InputError :error="form1.errors.potential_rootcause" />
-                      </div>
-
-                      <div v-if="form1.initial_level === 'RC'" class="flex flex-col space-y-3">
-                        <div class="flex items-center space-x-3">
-                          <label for="corrective_action" class="w-1/3 lowercase first-letter:capitalize">
-                            {{ __('Corrective Action') }}
-                          </label>
-                          
-                          <template v-if="(isResponsible || isComplianceMember) && ! deviation.second_section?.reviewed_at">
-                            <div class="w-2/3">
-                              <TextArea
-                                v-model="form1.corrective_action"
-                                :placeholder="__('Corrective Action')"
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.hu_hi_2"
                                 type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
                               />
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="w-2/3">
-                              <span class="w-full">{{ deviation.second_section?.corrective_action }}</span>
-                            </div>
-                          </template>
-                        </div>
-                        <InputError :error="form1.errors.corrective_action" />
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.jumlah_2"
+                                type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="3" class="border border-black px-2 py-1 text-left">
+                              <input
+                                v-model="form2.lokasi_dan_jam3"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-sm"
+                                placeholder="Isi lokasi dan jam beroperasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.hu_hi_3"
+                                type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                            <td class="border border-black px-2 py-1 text-center">
+                              <input
+                                v-model="form2.jumlah_2"
+                                type="text"
+                                placeholder="...."
+                                class="w-full border-none focus:ring-0 text-center text-sm"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+
+                          <tr class="bg-gray-200 text-center font-semibold text-sm">
+                            <td colspan="2" class="border border-black py-1">Operator</td>
+                            <td class="border border-black py-1">Paraf.</td>
+                            <td colspan="3" class="border border-black py-1">Validasi:</td>
+                          </tr>
+
+                          <tr class="bg-gray-200 text-center font-semibold text-sm">
+                            <td colspan="2" class="border border-black text-left w-64">
+                              <Select
+                                v-model="form2.operator_by1"
+                                :options="users.filter(user => user.id !== 1).map(user => ({
+                                  label: user.name,
+                                  value: user.id,
+                                }))"
+                                :searchable="true"
+                                placeholder="Pilih"
+                                class="w-full border-none focus:ring-0 text-center"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+
+                            <td class="border border-black text-center">
+                              Disetujui Pada : <br>
+                              {{ formatDate(report.checksheetday?.checksheetworkresult?.operator_at1) }}
+                            </td>
+
+                            <td colspan="3" class="border border-black text-center">
+                              <input
+                                v-model="form2.validasi1"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-center"
+                                placeholder="Validasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+
+                          <tr class="bg-gray-200 text-center font-semibold text-sm">
+                            <td colspan="2" class="border border-black text-left w-64">
+                              <Select
+                                v-model="form2.operator_by2"
+                                :options="users.filter(user => user.id !== 1).map(user => ({
+                                  label: user.name,
+                                  value: user.id,
+                                }))"
+                                :searchable="true"
+                                placeholder="Pilih"
+                                class="w-full border-none focus:ring-0 text-center"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+
+                            <td class="border border-black text-center">
+                              Disetujui Pada : <br>
+                              {{ formatDate(report.checksheetday?.checksheetworkresult?.operator_at2) }}
+                            </td>
+
+                            <td colspan="3" class="border border-black text-center">
+                              <input
+                                v-model="form2.validasi2"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-center"
+                                placeholder="Validasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+
+                          <tr class="bg-gray-200 text-center font-semibold text-sm">
+                            <td colspan="2" class="border border-black text-left w-64">
+                              <Select
+                                v-model="form2.operator_by3"
+                                :options="users.filter(user => user.id !== 1).map(user => ({
+                                  label: user.name,
+                                  value: user.id,
+                                }))"
+                                :searchable="true"
+                                placeholder="Pilih"
+                                class="w-full border-none focus:ring-0 text-center"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+
+                            <td class="border border-black text-center">
+                              Disetujui Pada : <br>
+                              {{ formatDate(report.checksheetday?.checksheetworkresult?.operator_at3) }}
+                            </td>
+
+                            <td colspan="3" class="border border-black text-center">
+                              <input
+                                v-model="form2.validasi3"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-center"
+                                placeholder="Validasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+
+                          <tr class="bg-gray-200 text-center font-semibold text-sm">
+                            <td colspan="2" class="border border-black text-left w-64">
+                              <Select
+                                v-model="form2.operator_by4"
+                                :options="users.filter(user => user.id !== 1).map(user => ({
+                                  label: user.name,
+                                  value: user.id,
+                                }))"
+                                :searchable="true"
+                                placeholder="Pilih"
+                                class="w-full border-none focus:ring-0 text-center"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+
+                            <td class="border border-black text-center">
+                              Disetujui Pada : <br>
+                              {{ formatDate(report.checksheetday?.checksheetworkresult?.operator_at4) }}
+                            </td>
+
+                            <td colspan="3" class="border border-black text-center">
+                              <input
+                                v-model="form2.validasi4"
+                                type="text"
+                                class="w-full border-none focus:ring-0 text-center"
+                                placeholder="Validasi"
+                                @change="saveWorkResult"
+                              />
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tfoot>
+                
+                <div class="d-flex justify-content-end mt-3">
+                  <Button v-if="!report.checksheetday?.checksheetworkresult?.id" class="bg-green-700 hover:bg-green-900 float-right mr-2" @click.prevent="submitchecksheetworkresult()">Simpan</Button>
+                  <Button v-if="report.checksheetday?.checksheetworkresult?.id" class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updatechecksheetworkresult()">Ubah</Button>
+                  <Button v-if="canApprove" class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="approvechecksheetworkresult()">Approve</Button>
+                </div>
+
+              </div>
+						</div>
+            <!-- section checksheetday -->
+
+            <!-- section warmingup -->
+            <div v-if="currentSection === 'warmingup'" class="tab-pane fade p-2" id="list-warmingup" role="tabpanel" aria-labelledby="list-warmingup-list">
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="machine_id" class="w-1/3">
+                      {{ __('Nama Mesin') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form3.machine_id"
+                          :options="machines.map(machine => ({
+                            label: `${machine.name} — ${machine.type}`,
+                            value: machine.id,
+                          }))"
+                          :searchable="true"
+                          placeholder="Pilih Mesin"
+                          required
+                        />
                       </div>
+                  </div>
 
-                      <div class="flex flex-col space-y-2">
-                        <div class="flex items-center space-x-2">
-                          <label for="corrective_action" class="w-1/3 lowercase first-letter:capitalize">
-                            {{ __('Lampiran / Bukti (jika diperlukan)') }}
-                          </label>
-                          
-                            <BtnAttachment
-                              :model="secondSection"
-                              type="Second_Section"
-                              :redaction="`Lampirkan`"
-                              :closed="false"
-                            />
+                  <InputError
+                    :error="form3.errors.machine_id"
+                  />
+                </div> 
+              </div>
 
-                        </div>
-                      </div>
-
-                      <div>
-                        <div class="flex flex-col space-y-2" style="margin-top: 0rem;">
-                          <div class="flex items-center space-x-2 my-2" style="margin-top: 0rem;">
-                            <p style="color:white; font-size: 0.8rem;  margin-top: -2rem;" class="w-1/3">Note</p>
-                            
-                            <p style="color: red; font-size: 0.8rem;  margin-top: -1rem; text-align: center;">
-                              *Sebelum upload dokumen, mohon simpan data terlebih dahulu.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div class="flex flex-col space-y-2" style="margin-top: -0rem;">
-                          <div class="flex items-center space-x-2 my-2" style="margin-top: -0rem;">
-                            <p style="color:white; font-size: 0.8rem;  margin-top: -2rem;" class="w-1/3">Note</p>
-                            
-                            <p style="color: black; font-size: 0.8rem;  margin-top: -2rem; text-align: center;">
-                              Format file yang didukung : <lable style="color: black; font-size: 0.8rem;  margin-top: -1rem; text-align: center;" class="font-bold">PNG, JPG, PDF, DOC, DOCX, XLS, XLSX, RAR, ZIP (Max : 5 MB / file)</lable>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div v-if="deviation.second_section?.recommended_by" class="flex flex-col space-y-2" style="margin-top:0rem;">
-                        <div class="flex items-center space-x-2">
-                          <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">
-                            {{ __('Direkomendasikan oleh') }}
-                          </label>
-                          
-                          <div class="flex flex-col">
-                            {{ deviation.second_section.recommender.name }} ({{ deviation.second_section.recommender.jabatan }})
-                          </div>
-                        </div>
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="waktu_start_engine" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Waktu Start Engine') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.waktu_start_engine"
+                          :placeholder="__('Waktu Start Engine')"
+                          type="datetime-local"
+                        />
                       </div>
                       
-                      <div v-if="deviation.second_section?.recommended_at" class="flex flex-col space-y-2">
-                        <div class="flex items-center space-x-2">
-                          <label for="recommended_at" class="w-1/3 first-letter:capitalize font-semibold">
-                            {{ __('Direkomendasikan pada') }}
-                          </label>
-                          <div>{{ new Date(deviation.second_section.recommended_at).toShortIndonesianDate() }}</div>
-                        </div>
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.waktu_start_engine }}</span>
                       </div>
+                    </template>
 
-                      <div v-if="deviation.second_section?.reviewed_by" class="flex flex-col space-y-2">
-                        <div class="flex items-center space-x-2">
-                          <label for="reviewed_by" class="w-1/3 first-letter:capitalize font-semibold">
-                            {{ __('Direview oleh') }}
-                          </label>
-                          
-                          <div class="flex flex-col">
-                            {{ deviation.second_section.reviewer.name }} ({{ deviation.second_section.reviewer.jabatan }})
-                          </div>
-                        </div>
+                  </div>
+                  <InputError :error="form3.errors.waktu_start_engine" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_kerja" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Kerja') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.jam_kerja"
+                          :placeholder="__('Jam Kerja')"
+                          type="time"
+                          step="1"
+                        />
                       </div>
                       
-                      <div v-if="deviation.second_section?.reviewed_at" class="flex flex-col space-y-2">
-                        <div class="flex items-center space-x-2">
-                          <label for="reviewed_at" class="w-1/3 first-letter:capitalize font-semibold">
-                            {{ __('Direview pada') }}
-                          </label>
-                          <div>{{ new Date(deviation.second_section.reviewed_at).toShortIndonesianDate() }}</div>
-                        </div>
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.jam_kerja }}</span>
                       </div>
+                    </template>
 
-                      <div class="flex items-center justify-end space-x-2">
-                        <template v-if="(isResponsible || isComplianceMember) && ! deviation.second_section?.reviewed_at">
-                          <ButtonGreen type="submit2">
-                            <p class="uppercase font-semibold">
-                              {{ __(form1.id ? 'Simpan' : 'laporkan') }}
-                            </p>
-                          </ButtonGreen>
-                        </template>
-                        <template v-if="deviation.second_section?.reviewed_by == user.id && ! deviation.second_section?.reviewed_at">
-                          <ButtonGreen type="submit2">
-                            <p class="uppercase font-semibold">
-                              {{ __(form1.id ? 'Selesai Review' : 'laporkan') }}
-                            </p>
-                          </ButtonGreen>
-                        </template> 
-                      </div>
-                    </div>
-                  </template>
-                </Card>
-              </form>
-            </div> -->
-            <!-- section2 -->
+                  </div>
+                  <InputError :error="form3.errors.jam_kerja" />
+                </div>
+              </div>
 
-            <!-- section 6 -->
-            <!-- <div v-if="currentSection === 'sixthSection'" class="tab-pane fade p-2" id="list-section6" role="tabpanel" aria-labelledby="list-section6-list">
 							<div class="row my-2">
-                <div class="flex items-center space-x-2">
-                  <label for="method" class="col-4 w-1/3">Metode Peninjauan Efektivitas CA / PA</label>
-                  <div class="col w-2/3">
-                    <div v-if="isComplianceMember && ! deviation.sixth_section?.spkp_signed_at">
-                      <Select
-                        v-model="form6.method"
-                        :options="sixthSectionMethodOptions.concat(['Lainnya'])"
-                        :searchable="true"
-                        :disabled="deviation.sixth_section?.method && ! sixthSectionMethodOptions.includes(deviation.sixth_section.method)"
-                        placeholder="Pilih metode"
-                        class="capitalize"
-                        required>
-                      </Select>
-                      <div v-if="deviation.sixth_section?.method === 'Lainnya'" class="input-group mt-2">
-                        <input v-model="form6.other_method" type="text" class="form-control" :disabled="deviation.sixth_section.method !== 'Lainnya'" placeholder="Sebutkan metode lain">
-                        <div class="input-group-append">
-                          <button class="btn btn-danger" type="button" @click.prevent="deviation.sixth_section.method = null; deviation.sixth_section.other_method = null">Pilih Metode</button>
-                        </div>
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_mesin" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Mesin') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.jam_mesin"
+                          :placeholder="__('Jam Mesin')"
+                          type="time"
+                          step="1"
+                        />
                       </div>
-                    </div>
-                    <span v-else>{{ deviation.sixth_section?.other_method ?? deviation.sixth_section?.method }}</span>
-                  </div>
-                </div>
-							</div>
-							<div class="row my-2">
-                <div class="flex items-center space-x-2">
-                  <label for="remarks" class="col-4 w-1/3">Keterangan</label>
-                  <div class="col w-2/3">
-                    <TextArea v-if="isComplianceMember && ! deviation.sixth_section?.spkp_signed_at" v-model="form6.remarks" name="remarks" class="form-control" placeholder="Keterangan"></TextArea>
-                    <span v-else>{{ deviation.sixth_section?.remarks }}</span>
-                  </div>
-                </div>
-							</div>
-							<div class="row my-2">
-                <div class="flex items-center space-x-2">
-                  <label for="conclusion" class="col-4 w-1/3">Kesimpulan</label>
-                  <div class="col w-2/3">
-                    <div v-if="isComplianceMember && ! deviation.sixth_section?.spkp_signed_at">
-                      <div class="form-check">
-                        <input v-model="form6.conclusion" class="form-check-input" type="radio" id="CAPAEffectiveYes" value="1">
-                        <label class="form-check-label" for="CAPAEffectiveYes"> CAPA Efektif </label>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.jam_mesin }}</span>
                       </div>
-                      <div class="form-check">
-                        <input v-model="form6.conclusion" class="form-check-input" type="radio" id="CAPAEffectiveNo" value="0">
-                        <label class="form-check-label" for="CAPAEffectiveNo"> CAPA Tidak Efektif </label>
+                    </template>
+
+                  </div>
+                  <InputError :error="form3.errors.jam_mesin" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_genset" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Genset') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.jam_genset"
+                          :placeholder="__('Jam Genset')"
+                          type="time"
+                          step="1"
+                        />
                       </div>
-                    </div>
-                    <span v-else>{{ deviation.sixth_section?.conclusion === 1 ? 'CAPA Efektif' : 'CAPA Tidak Efektif' }}</span>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.jam_genset }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.jam_genset" />
                 </div>
-							</div>
+              </div>
+
 							<div class="row my-2">
-                <div class="flex items-center space-x-2">
-                  <label for="description" class="col-4 w-1/3">Penjelasan</label>
-                  <div class="col w-2/3">
-                    <TextArea v-if="isComplianceMember && ! deviation.sixth_section?.spkp_signed_at" v-model="form6.description" name="description" class="form-control" placeholder="Penjelasan"></TextArea>
-                    <span v-else>{{ deviation.sixth_section?.description }}</span>
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="counter_pecok" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Counter Pecok') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.counter_pecok"
+                          :placeholder="__('Counter Pecok')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.counter_pecok }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.counter_pecok" />
                 </div>
-							</div>
+              </div>
+
 							<div class="row my-2">
-                <div class="flex items-center space-x-2">
-                  <label for="capa_closed_date" class="col-4 w-1/3">Tanggal Penutupan CAPA</label>
-                  <div class="col w-2/3">
-                    <Input v-if="isComplianceMember && ! deviation.sixth_section?.spkp_signed_at" v-model="form6.capa_closed_date" name="capa_closed_date" class="form-control" type="date" max="<?= date('Y-m-d') ?>" />
-                    <span v-else>{{ new Date(deviation.sixth_section?.capa_closed_date)?.toOnlyIndonesianDate() }}</span>
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="oddometer" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Oddo Meter') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.oddometer"
+                          :placeholder="__('Oddo Meter')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.oddometer }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.oddometer" />
                 </div>
-							</div>
-							<div v-if="deviation.sixth_section?.spkp_id" class="flex flex-col space-y-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf SPKP Oleh</label>
-                  <div class="col d-flex align-items-center">
-                    {{ deviation.sixth_section.spkp?.name }} ({{ deviation.sixth_section.spkp?.jabatan }})
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="waktu_stop_engine" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Waktu Stop Engine') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.waktu_stop_engine"
+                          :placeholder="__('Waktu Stop Engine')"
+                          type="datetime-local"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.waktu_stop_engine }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.waktu_stop_engine" />
                 </div>
-							</div>
-							<div v-if="deviation.sixth_section?.spkp_signed_at" class="row my-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf SPKP Pada</label>
-                  <div class="col d-flex align-items-center">
-                    {{ new Date(deviation.sixth_section?.spkp_signed_at).toShortIndonesianDate() }}
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="penggunaan_hsd" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Penggunaan HSD') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.penggunaan_hsd"
+                          :placeholder="__('Penggunaan HSD')"
+                          type="number"
+                          step="0.01"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.penggunaan_hsd }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.penggunaan_hsd" />
                 </div>
-							</div>
-							<div v-if="deviation.sixth_section?.ampr_id" class="row my-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf AMPR Oleh</label>
-                  <div class="col d-flex align-items-center">
-                    {{ deviation.sixth_section.ampr?.name }} ({{ deviation.sixth_section.ampr?.jabatan }})
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="hsd_tersedia" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('HSD Tersedia') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form3.hsd_tersedia"
+                          :placeholder="__('HSD Tersedia')"
+                          type="number"
+                          step="0.01"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.hsd_tersedia }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.hsd_tersedia" />
                 </div>
-							</div>
-							<div v-if="deviation.sixth_section?.ampr_signed_at" class="row my-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf AMPR Pada</label>
-                  <div class="col d-flex align-items-center">
-                    {{ new Date(deviation.sixth_section?.ampr_signed_at).toShortIndonesianDate() }}
+              </div>
+
+              <div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="user_id" class="w-1/3">
+                      {{ __('Crew') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form3.user_id"
+                          :options="users.filter(user => user.id !== 1).map(user => ({
+                            label: user.name,
+                            value: user.id,
+                          }))"
+                          :searchable="true"
+                          mode="tags"
+                          placeholder="Pilih Crew"
+                          required
+                        />
+                      </div>
                   </div>
-                </div>
-							</div>
-							<div v-if="deviation.sixth_section?.mpm_id" class="row my-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf MPM Oleh</label>
-                  <div class="col d-flex align-items-center">
-                    {{ deviation.sixth_section.mpm?.name }} ({{ deviation.sixth_section.mpm?.jabatan }})
+
+                  <InputError
+                    :error="form3.errors.user_id"
+                  />
+                </div> 
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="note" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Keterangan') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <TextArea
+                          v-model="form3.note"
+                          :placeholder="__('Keterangan')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.warmingup?.note }}</span>
+                      </div>
+                    </template>
+
                   </div>
+                  <InputError :error="form3.errors.note" />
                 </div>
+              </div>
+							
+							<div class="d-flex justify-content-end mt-3">
+								<Button v-if="!report.warmingup?.id" class="bg-green-700 hover:bg-green-900 float-right mr-2" @click.prevent="submitwarmingup()">Simpan</Button>
+                <Button v-else class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updatewarmingup()">Ubah</Button>
+
 							</div>
-							<div v-if="deviation.sixth_section?.mpm_signed_at" class="row my-2">
-                <div class="flex items-center space-x-2 my-2">
-                  <label for="recommended_by" class="w-1/3 first-letter:capitalize font-semibold">Paraf MPM Pada</label>
-                  <div class="col d-flex align-items-center">
-                    {{ new Date(deviation.sixth_section?.mpm_signed_at).toShortIndonesianDate() }}
+						</div>
+            <!-- section warmingup -->
+
+            <!-- section workresult -->
+            <div v-if="currentSection === 'workresult'" class="tab-pane fade p-2" id="list-workresult" role="tabpanel" aria-labelledby="list-warmingup-list">
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="machine_id" class="w-1/3">
+                      {{ __('Nama Mesin') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form4.machine_id"
+                          :options="machines.map(machine => ({
+                            label: `${machine.name} — ${machine.type}`,
+                            value: machine.id,
+                          }))"
+                          :searchable="true"
+                          placeholder="Pilih Mesin"
+                          required
+                        />
+                      </div>
                   </div>
+
+                  <InputError
+                    :error="form4.errors.machine_id"
+                  />
+                </div> 
+              </div>
+
+              <div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="region_id" class="w-1/3">
+                      {{ __('Nama Wilayah') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form4.region_id"
+                          :options="regions.map(region => ({
+                            label: region.name,
+                            value: region.id,
+                          }))"
+                          :searchable="true"
+                          placeholder="Pilih Wilayah"
+                          required
+                        />
+                      </div>
+                  </div>
+
+                  <InputError
+                    :error="form4.errors.region_id"
+                  />
+                </div> 
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="antara" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Antara') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.antara"
+                          :placeholder="__('Antara')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.antara }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.antara" />
                 </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="km_hm" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Km/Hm') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.km_hm"
+                          :placeholder="__('Km/Hm')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.km_hm }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.km_hm" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jumlah_msp" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jumlah MSP') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jumlah_msp"
+                          :placeholder="__('Jumlah MSP')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jumlah_msp }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jumlah_msp" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="waktu_start_engine" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Waktu Start Engine') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.waktu_start_engine"
+                          :placeholder="__('Waktu Start Engine')"
+                          type="datetime-local"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.waktu_start_engine }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.waktu_start_engine" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_luncuran" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Luncuran') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jam_luncuran"
+                          :placeholder="__('Jam Luncuran')"
+                          type="time"
+                          step="1"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jam_luncuran }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jam_luncuran" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_kerja" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Kerja') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jam_kerja"
+                          :placeholder="__('Jam Kerja')"
+                          type="time"
+                          step="1"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jam_kerja }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jam_kerja" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_mesin" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Mesin') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jam_mesin"
+                          :placeholder="__('Jam Mesin')"
+                          type="time"
+                          step="1"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jam_mesin }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jam_mesin" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jam_genset" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Jam Genset') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jam_genset"
+                          :placeholder="__('Jam Genset')"
+                          type="time"
+                          step="1"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jam_genset }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jam_genset" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="counter_pecok" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Counter Pecok') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.counter_pecok"
+                          :placeholder="__('Counter Pecok')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.counter_pecok }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.counter_pecok" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="oddometer" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Oddo Meter') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.oddometer"
+                          :placeholder="__('Oddo Meter')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.oddometer }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.oddometer" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="penggunaan_hsd" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Penggunaan HSD') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.penggunaan_hsd"
+                          :placeholder="__('Penggunaan HSD')"
+                          type="number"
+                          step="0.01"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.penggunaan_hsd }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.penggunaan_hsd" />
+                </div>
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="hsd_tersedia" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('HSD Tersedia') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.hsd_tersedia"
+                          :placeholder="__('HSD Tersedia')"
+                          type="number"
+                          step="0.01"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.hsd_tersedia }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.hsd_tersedia" />
+                </div>
+              </div>
+
+              <div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="user_id" class="w-1/3">
+                      {{ __('Crew') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form4.user_id"
+                          :options="users.filter(user => user.id !== 1).map(user => ({
+                            label: user.name,
+                            value: user.id,
+                          }))"
+                          :searchable="true"
+                          mode="tags"
+                          placeholder="Pilih Crew"
+                          required
+                        />
+                      </div>
+                  </div>
+
+                  <InputError
+                    :error="form4.errors.user_id"
+                  />
+                </div> 
+              </div>
+
+              <div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="pengawal_id" class="w-1/3">
+                      {{ __('Pengawal') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Select
+                          v-model="form4.pengawal_id"
+                          :options="users.filter(user => user.id !== 1).map(user => ({
+                            label: user.name,
+                            value: user.id,
+                          }))"
+                          :searchable="true"
+                          placeholder="Pilih Pengawal"
+                          required
+                        />
+                      </div>
+                  </div>
+
+                  <InputError
+                    :error="form4.errors.pengawal_id"
+                  />
+                </div> 
+              </div>
+
+							<div class="row my-2">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="note" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Keterangan') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <TextArea
+                          v-model="form4.note"
+                          :placeholder="__('Keterangan')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.note }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.note" />
+                </div>
+              </div>
+							
+							<div class="d-flex justify-content-end mt-3">
+								<Button v-if="!report.workresult?.id" class="bg-green-700 hover:bg-green-900 float-right mr-2" @click.prevent="submitworkresult()">Simpan</Button>
+                <Button v-else class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updateworkresult()">Ubah</Button>
 							</div>
-							<hr>
-							<div v-if="isComplianceMember || isMpm" class="d-flex justify-content-end mt-3">
-								<Button v-if="isSpkp && ! deviation.sixth_section?.spkp_signed_at" @click.prevent="approveSixthSection('spkp')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf SPV Penyimpangan</Button>
-								<Button v-if="isAmpr && ! deviation.sixth_section?.ampr_signed_at && deviation.sixth_section?.spkp_signed_at" @click.prevent="approveSixthSection('ampr')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf Asman Pemenuhan Regulasi</Button>
-								<Button v-if="isMpm && ! deviation.sixth_section?.mpm_signed_at && deviation.sixth_section?.ampr_signed_at" @click.prevent="approveSixthSection('mpm')" class="bg-blue-700 hover:bg-blue-900 rounded-md float-right">Paraf Manager Pemastian Mutu</Button>
-								<Button v-if="! isAmpr && ! isMpm && ! deviation.sixth_section?.spkp_signed_at" @click.prevent="submitSixthSection()" class="bg-green-700 hober:bg-green-900 float-right mr-2">Simpan Verifikasi</Button>
-							</div>
-						</div> -->
-            <!-- section 6 -->
+						</div>
+            <!-- section workresult -->
 
           </div>
           </div>
@@ -1139,190 +2171,6 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
         </div>
       </template>
     </Card>
-    
-    <!-- <Modal :show="open">
-      <form
-        @submit.prevent="submit4"
-        class="w-full max-w-5xl h-fit shadow-xl" 
-        enctype="multipart/form-data"
-      >
-        <Card class="bg-gray-50 dark:bg-gray-700 dark:text-gray-100">
-          <template #header>
-            <div class="flex items-center justify-between bg-gray-200 dark:bg-gray-800 p-2">
-              <div class="flex items-center bg-gray-200 dark:bg-gray-800 p-2 font-semibold">
-                <p>Tambah CA/PA</p>
-              </div>
-              <Close @click.prevent="close" />
-            </div>
-          </template>
-
-          <template #body>
-            <div class="flex flex-col space-y-4 p-4">       
-						<h4 class="text-center font-semibold">Rencana CAPA</h4>
-              <div class="flex flex-col space-y-2">
-                <div class="flex items-center space-x-2">
-                  <label for="description" class="w-1/3">
-                    {{ __('Tindakan Perbaikan / Pencegahan') }}
-                  </label>
-
-                  <Input
-                    v-model="form4.description"
-                    :placeholder="__('Tindakan Perbaikan / Pencegahan')"
-                    type="text"
-                  />
-                </div>
-
-                <InputError
-                  :error="form4.errors.description"
-                />
-              </div>         
-              
-              <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="type" class="w-1/3">
-                  {{ __('Tipe Tindakan') }}
-                </label>
-                
-                <Select
-                  v-model="form4.type"
-                  :options="[
-                    {label: 'Corrective Action (CA)', value: 'corrective'}, 
-                    {label: 'Preventive Action (PA)', value: 'preventive'}
-                  ]"
-                  :searchable="false"
-                  :placeholder="__('Tipe Tindakan')"
-                  required
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.type"
-              />
-            </div>
-            
-            <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="due_date" class="w-1/3">
-                  {{ __('Batas Waktu Penyelesaian') }}
-                </label>
-
-                <Input
-                  v-model="form4.due_date"
-                  :placeholder="__('Batas Waktu Penyelesaian')"
-                  type="date"
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.due_date"
-              />
-            </div>  
-
-            <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="pic_id" class="w-1/3">
-                  {{ __('Penanggung Jawab') }}
-                </label>
-                
-                <Select
-                  v-model="form4.pic_id"
-                  :options="users.map(user => ({
-                    label: user.name,
-                    value: user.id,
-                  }))"
-                  :searchable="true"
-                  placeholder="Pilih Penanggung Jawab"
-                  required
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.pic_id"
-              />
-            </div>  
-            
-            <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="others_pic" class="w-1/3">
-                  {{ __('Penanggung Jawab Lain') }} <br>
-                  <span class="text-sm text-gray-600">*opsional / jika tidak ada dalam list / PIC lebih dari satu</span>
-                </label>
-
-                <Input
-                  v-model="form4.others_pic"
-                  :placeholder="__('Penanggung Jawab Lain')"
-                  type="text"
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.others_pic"
-              />
-            </div>
-            <hr> 
-            
-						<h4 class="text-center font-semibold">Implementasi CAPA</h4>
-						<h6 v-if="! form4.id" class="text-center text-gray-600 my-2">Implementasi dapat langsung diisi jika CA/PA sudah terlaksana.</h6>
-            <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="implementation" class="w-1/3">
-                  {{ __('Uraian Implementasi Tindakan') }} 
-                </label>
-
-                <Input
-                  v-model="form4.implementation"
-                  :placeholder="__('Uraian Implementasi Tindakan')"
-                  type="text"
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.implementation"
-              />
-            </div> 
-
-            <div class="flex flex-col space-y-2">
-              <div class="flex items-center space-x-2">
-                <label for="verified_by" class="w-1/3">
-                  {{ __('Verifikasi Oleh') }}
-                </label>
-                
-                <Select
-                  v-model="form4.verified_by"
-                  :options="users.filter(user => user.username == 's35' || user.username_atasan == 's35').map(user => ({
-                    label: `${user.name} - ${user.jabatan}`,
-                    value: user.id,
-                  }))"
-                  :searchable="true"
-                  placeholder="Pilih Penanggung Jawab"
-                />
-              </div>
-
-              <InputError
-                :error="form4.errors.verified_by"
-              />
-            </div> 
-        
-          </div>
-          </template>
-
-          <template #footer>
-            <div class="flex items-center justify-end space-x-2 bg-gray-200 dark:bg-gray-800 px-2 py-1">
-                <Button @click.prevent="close" class="bg-gray-600">
-                  <p class="uppercase font-semibold">
-                    {{ __('Tutup') }}
-                  </p>
-                </Button>
-                <ButtonGreen type="submit4">
-                  <p class="uppercase font-semibold">
-                  {{ __(form4.id ? 'ubah' : 'simpan') }}
-                  </p>
-                </ButtonGreen>
-            </div>
-          </template>
-        </Card>
-      </form>
-    </Modal> -->
 
   </DashboardLayout>
 </template>

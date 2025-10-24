@@ -58,16 +58,16 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 <style src="@/multiselect.css"></style>
 
 <template>
-  <DashboardLayout :title="__('Working Report')">
+  <DashboardLayout :title="__('Working Order')">
     <div class="transition-all duration-300">
       <main class="p-4">
-        <h2 class="font-bold text-lg mb-1">Working Report</h2>
-        <p class="text-sm text-gray-500 mb-4">Halaman Ubah Data Working Report</p>
+        <h2 class="font-bold text-lg mb-1">Working Order</h2>
+        <p class="text-sm text-gray-500 mb-4">Halaman Ubah Data Working Order</p>
         <Card class="bg-white dark:bg-gray-700 dark:text-gray-100 shadow-md">
 
           <template #header>
              <div class="flex justify-center items-center p-2 bg-gray-200 dark:bg-gray-800">
-              <p class="font-semibold text-center">Form Ubah Working Report</p>
+              <p class="font-semibold text-center">Form Ubah Working Order</p>
             </div>
           </template>
 
@@ -82,7 +82,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 >
                   <option disabled value="">-- Pilih Mesin --</option>
                   <option v-for="machine in machines" :key="machine.id" :value="machine.id">
-                    {{ machine.name }}
+                    {{ `${machine.name} - ${machine.type}` }}
                   </option>
                 </select>
                 <div v-if="form.errors.machine_id" class="text-red-500 text-sm">

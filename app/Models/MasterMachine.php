@@ -12,10 +12,23 @@ class MasterMachine extends Model
     protected $table = 'master_machines';
 
     protected $fillable = [
-        'code',
+        'region_id',
         'name',
         'type',
-        'location',
-        'status',
+        'nomor',
+        'tahun_md',
+        'umur',
+        'no_sarana',
+        'keterangan',
     ];
+
+    protected $with = [
+        'region',
+    ];
+    
+
+    public function region()
+    {
+        return $this->belongsTo(MasterRegion::class);
+    }
 }

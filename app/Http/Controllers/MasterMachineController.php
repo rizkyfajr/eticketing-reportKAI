@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Models\MasterMachine;
+use App\Models\MasterRegion;
 
 class MasterMachineController extends Controller
 {
@@ -23,6 +24,7 @@ class MasterMachineController extends Controller
   {
     return Inertia::render('Machine/Index', [
       'machine'      => $machine,
+      'regions'     => MasterRegion::select('id', 'name')->get(),
     ]);
   }
   
@@ -45,19 +47,25 @@ class MasterMachineController extends Controller
   public function store(Request $request)
   {
     $request->validate([
-        'code'      => 'required|string|unique:master_machines,code',
+        'region_id' => 'required|exists:master_regions,id',
         'name'      => 'required|string|max:255',
         'type'      => 'nullable|string|max:255',
-        'location'  => 'nullable|string|max:255',
-        'status'    => 'in:aktif,nonaktif',
+        'nomor'     => 'nullable|string|max:255',
+        'tahun_md'  => 'nullable|integer|',
+        'umur'      => 'nullable|integer|',
+        'no_sarana' => 'nullable|string|max:255',
+        'keterangan'=> 'nullable|string|max:255',
     ]);
 
     $machine = MasterMachine::create([
-        'code'      => $request->code,
+        'region_id' => $request['region_id'],
         'name'      => $request->name,
         'type'      => $request->type,
-        'location'  => $request->location,
-        'status'    => $request->status ?? 'aktif',
+        'nomor'     => $request->nomor,
+        'tahun_md'  => $request->tahun_md,
+        'umur'      => $request->umur,
+        'no_sarana' => $request->no_sarana,
+        'keternagan'=> $request->keternagan,
     ]);
 
     if ($machine) {
@@ -104,11 +112,14 @@ class MasterMachineController extends Controller
       $machine = MasterMachine::findOrFail($id);
 
       $validated = $request->validate([
-          'code' => 'required|unique:master_machines,code,' . $id,
-          'name' => 'required|string|max:255',
-          'type' => 'nullable|string|max:255',
-          'location' => 'nullable|string|max:255',
-          'status' => 'in:aktif,nonaktif',
+          'region_id' => 'required|exists:master_regions,id',
+          'name'      => 'required|string|max:255',
+          'type'      => 'nullable|string|max:255',
+          'nomor'     => 'nullable|string|max:255',
+          'tahun_md'  => 'nullable|integer|',
+          'umur'      => 'nullable|integer|',
+          'no_sarana' => 'nullable|string|max:255',
+          'keterangan'=> 'nullable|string|max:255',
       ]);
 
       $machine->update($validated);
@@ -165,7 +176,7 @@ class MasterMachineController extends Controller
     ->when(!$user->hasRole(['superuser', 'it']), fn (Builder $query) => 
         $query->where('created_by_id', $user->id)
     )
-    ->select(['id', 'code', 'name', 'type', 'location', 'status'])
+    ->select(['id', 'region_id', 'name', 'type', 'nomor', 'tahun_md', 'umur', 'umur', 'no_sarana', 'keterangan'])
     ->paginate($request->per_page ?: 10);
 
     return response()->json($machines);

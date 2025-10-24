@@ -95,10 +95,38 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::post('/master-regions/paginate', [App\Http\Controllers\MasterRegionController::class, 'paginate'])
         ->name('master-regions.paginate');     
 
+    Route::resource('master-checksheet', App\Http\Controllers\CheckSheetMasterController::class);
+    Route::post('/master-checksheet/paginate', [App\Http\Controllers\CheckSheetMasterController::class, 'paginate'])
+        ->name('master-checksheet.paginate'); 
+
+    Route::resource('master-checksheet-day', App\Http\Controllers\CheckSheetMasterDayController::class);
+    Route::post('/master-checksheet-day/paginate', [App\Http\Controllers\CheckSheetMasterDayController::class, 'paginate'])
+        ->name('master-checksheet-day.paginate'); 
+
+    Route::post('/working-reports/{report}/fetch', [App\Http\Controllers\WorkingReportController::class, 'fetch'])->name('working-reports.fetch');
     Route::get('/working-reports/{report}/detail/', [App\Http\Controllers\WorkingReportController::class, 'detail'])->name('working-reports.detail');
     Route::resource('working-reports', App\Http\Controllers\WorkingReportController::class);
     Route::post('/working-reports/paginate', [App\Http\Controllers\WorkingReportController::class, 'paginate'])
-        ->name('working-reports.paginate');     
+        ->name('working-reports.paginate');        
+    
+    Route::post('/checksheetday-results/autosave', [App\Http\Controllers\CheckSheetDayResultController::class, 'autosave'])->name('checksheetday-results.autosave');
+
+    // Route::post('/checksheet-workresult/autosave', [App\Http\Controllers\ChecksheetWorkResultController::class, 'autosave'])->name('checksheet-workresult.autosave');
+    Route::resource('checksheet-workresult', App\Http\Controllers\ChecksheetWorkResultController::class);
+    Route::post('/checksheet-workresult/approve', [App\Http\Controllers\CheckSheetWorkResultController::class, 'approve'])->name('checksheet-workresult.approve');
+
+    // Route::post('/checksheet-results/autosave', [App\Http\Controllers\CheckSheetResultController::class, 'autosave'])->name('checksheet-results.autosave');
+    Route::resource('check-sheet', App\Http\Controllers\CheckSheetController::class);
+    Route::post('/check-sheet/paginate', [App\Http\Controllers\CheckSheetController::class, 'paginate'])
+        ->name('check-sheet.paginate');
+
+    Route::resource('check-sheet-day', App\Http\Controllers\CheckSheetDayController::class);
+    Route::post('/check-sheet-day/paginate', [App\Http\Controllers\CheckSheetDayController::class, 'paginate'])
+        ->name('check-sheet-day.paginate');
+        
+    Route::resource('warming-up', App\Http\Controllers\WarmingUpController::class);
+    Route::post('/warming-up/paginate', [App\Http\Controllers\WarmingUpController::class, 'paginate'])
+        ->name('warming-up.paginate');
 
     Route::resource('work-results', App\Http\Controllers\WorkResultController::class);
     Route::post('/work-results/paginate', [App\Http\Controllers\WorkResultController::class, 'paginate'])

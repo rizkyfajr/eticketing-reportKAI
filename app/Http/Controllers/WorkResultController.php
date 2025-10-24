@@ -11,7 +11,9 @@ use Inertia\Inertia;
 use App\Models\User;
 use App\Models\MasterMachine;
 use App\Models\MasterRegion;
+use App\Models\WorkingReport;
 use App\Models\WorkResult;
+use Illuminate\Support\Facades\DB;
 
 class WorkResultController extends Controller
 {
@@ -53,45 +55,75 @@ class WorkResultController extends Controller
   * @return \Illuminate\Http\Response
   */
   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'machine_id' => 'required|exists:master_machines,id',
-        'region_id' => 'required|exists:master_regions,id',
-        'antara' => 'nullable|string',
-        'km_hm' => 'nullable|numeric',
-        'jumlah_msp' => 'nullable|numeric',
-        'counter_pecok' => 'nullable|numeric',
-        'oddometer' => 'nullable|numeric',
-        'penggunaan_hsd' => 'nullable|numeric',
-        'hsd_tersedia' => 'nullable|numeric',
-        'waktu_start_engine' => 'nullable|string',
-        'jam_luncuran' => 'nullable|string',
-        'jam_kerja' => 'nullable|string',
-        'jam_mesin' => 'nullable|string',
-        'jam_genset' => 'nullable|string',
-        'pengawal_id' => 'nullable|exists:users,id',
-        'note' => 'nullable|string',
-    ]);
+  {
+    try {
+        $validated = $request->validate([
+            'working_report_id'  => 'required|exists:working_reports,id',
+            'machine_id'         => 'required|exists:master_machines,id',
+            'region_id'          => 'required|exists:master_regions,id',
+            'antara'             => 'nullable|string|max:255',
+            'km_hm'              => 'nullable|string|max:255',
+            'jumlah_msp'         => 'nullable|integer',
+            'waktu_start_engine' => 'nullable|date',
+            'jam_luncuran'       => 'nullable|date_format:H:i:s',
+            'jam_kerja'          => 'nullable|date_format:H:i:s',
+            'jam_mesin'          => 'nullable|date_format:H:i:s',
+            'jam_genset'         => 'nullable|date_format:H:i:s',
+            'counter_pecok'      => 'nullable|integer',
+            'oddometer'          => 'nullable|integer',
+            'penggunaan_hsd'     => 'nullable|numeric',
+            'hsd_tersedia'       => 'nullable|numeric',
+            'pengawal_id'        => 'nullable|exists:users,id',
+            'note'               => 'nullable|string|max:1000',
+            'user_id'            => 'nullable|array',
+            'user_id.*'          => 'exists:users,id',
+        ]);
 
-    $validated['created_by_id'] = auth()->id();
+        $workResult = WorkResult::create([
+            'working_report_id' => $validated['working_report_id'],
+            'machine_id'        => $validated['machine_id'],
+            'region_id'         => $validated['region_id'],
+            'antara'            => $request->antara,
+            'km_hm'             => $request->km_hm,
+            'jumlah_msp'        => $request->jumlah_msp,
+            'waktu_start_engine'=> $request->waktu_start_engine,
+            'jam_luncuran'      => $request->jam_luncuran,
+            'jam_kerja'         => $request->jam_kerja,
+            'jam_mesin'         => $request->jam_mesin,
+            'jam_genset'        => $request->jam_genset,
+            'counter_pecok'     => $request->counter_pecok,
+            'oddometer'         => $request->oddometer,
+            'penggunaan_hsd'    => $request->penggunaan_hsd,
+            'hsd_tersedia'      => $request->hsd_tersedia,
+            'pengawal_id'       => $request->pengawal_id,
+            'note'              => $request->note,
+            'created_by_id'     => auth()->id(),
+        ]);
 
-    $report = WorkResult::create($validated);
+        if (!empty($validated['user_id'])) {
+            $crewPivotData = collect($validated['user_id'])->map(function ($userId) use ($workResult) {
+                return [
+                    'work_result_id' => $workResult->id,
+                    'user_id'        => $userId,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+            })->toArray();
 
-    // // Jika ada relasi crew
-    // if ($request->has('users')) {
-    //     foreach ($request->users as $userId) {
-    //         $report->reportUsers()->create([
-    //             'user_id' => $userId,
-    //         ]);
-    //     }
-    // }
+            DB::table('workresult_user')->insert($crewPivotData);
+        }
 
-    // return redirect()->back()->with('success', 'Data berhasil disimpan.');
-    
-   return redirect()->route('work-results.index')->with('success', 'Laporan pekerjaan berhasil disimpan.');
-}
+        DB::commit();
 
-  
+        return redirect()->back()->with('success', 'Data berhasil disimpan.');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()->withErrors($e->errors())->withInput();
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+  }
+
   /**
   * Display the specified resource.
   *
@@ -130,33 +162,83 @@ class WorkResultController extends Controller
   */
   public function update(Request $request, $id)
   {
-      $report = WorkResult::findOrFail($id);
+    DB::beginTransaction();
 
-      $validated = $request->validate([
-          'machine_id'        => 'required|exists:master_machines,id',
-          'region_id'         => 'required|exists:master_regions,id',
-          'antara'            => 'nullable|string|max:255',
-          'km_hm'             => 'nullable|string|max:255',
-          'jumlah_msp'        => 'nullable|numeric',
-          'waktu_start_engine'=> 'nullable|date_format:H:i',
-          'jam_luncuran'      => 'nullable|string|max:255',
-          'jam_kerja'         => 'nullable|string|max:255',
-          'jam_mesin'         => 'nullable|string|max:255',
-          'jam_genset'        => 'nullable|string|max:255',
-          'counter_pecok'     => 'nullable|string|max:255',
-          'oddometer'         => 'nullable|string|max:255',
-          'penggunaan_hsd'    => 'nullable|string|max:255',
-          'hsd_tersedia'      => 'nullable|string|max:255',
-          'pengawal_id'       => 'nullable|exists:users,id',
-          'note'              => 'nullable|string|max:1000',
-      ]);
+    try {
+        $workResult = WorkResult::findOrFail($id);
 
-      $report->update($validated);
+        $validated = $request->validate([
+            'machine_id'         => 'required|exists:master_machines,id',
+            'region_id'          => 'required|exists:master_regions,id',
+            'antara'             => 'nullable|string|max:255',
+            'km_hm'              => 'nullable|string|max:255',
+            'jumlah_msp'         => 'nullable|integer',
+            'waktu_start_engine' => 'nullable|date',
+            'jam_luncuran'       => 'nullable|date_format:H:i:s',
+            'jam_kerja'          => 'nullable|date_format:H:i:s',
+            'jam_mesin'          => 'nullable|date_format:H:i:s',
+            'jam_genset'         => 'nullable|date_format:H:i:s',
+            'counter_pecok'      => 'nullable|integer',
+            'oddometer'          => 'nullable|integer',
+            'penggunaan_hsd'     => 'nullable|numeric',
+            'hsd_tersedia'       => 'nullable|numeric',
+            'pengawal_id'        => 'nullable|exists:users,id',
+            'note'               => 'nullable|string|max:1000',
+            'user_id'            => 'nullable|array',
+            'user_id.*'          => 'exists:users,id',
+        ]);
 
-      return redirect()->route('work-results.index')
-                      ->with('success', 'Laporan pekerjaan berhasil diubah.');
+        $workResult->update([
+            'machine_id'        => $validated['machine_id'],
+            'region_id'         => $validated['region_id'],
+            'antara'            => $validated['antara'] ?? null,
+            'km_hm'             => $validated['km_hm'] ?? null,
+            'jumlah_msp'        => $validated['jumlah_msp'] ?? null,
+            'waktu_start_engine'=> $validated['waktu_start_engine'] ?? null,
+            'jam_luncuran'      => $validated['jam_luncuran'] ?? null,
+            'jam_kerja'         => $validated['jam_kerja'] ?? null,
+            'jam_mesin'         => $validated['jam_mesin'] ?? null,
+            'jam_genset'        => $validated['jam_genset'] ?? null,
+            'counter_pecok'     => $validated['counter_pecok'] ?? null,
+            'oddometer'         => $validated['oddometer'] ?? null,
+            'penggunaan_hsd'    => $validated['penggunaan_hsd'] ?? null,
+            'hsd_tersedia'      => $validated['hsd_tersedia'] ?? null,
+            'pengawal_id'       => $validated['pengawal_id'] ?? null,
+            'note'              => $validated['note'] ?? null,
+            'updated_by_id'     => auth()->id(),
+        ]);
+
+        if ($request->has('user_id')) {
+        $existingUserIds = $workResult->users()->pluck('users.id')->toArray();
+        $newUserIds = $validated['user_id'] ?? [];
+
+        sort($existingUserIds);
+        sort($newUserIds);
+
+        if ($existingUserIds !== $newUserIds) {
+                $pivotData = [];
+                foreach ($newUserIds as $userId) {
+                    $pivotData[$userId] = [
+                        'updated_at' => now(),
+                    ];
+                }
+
+                $workResult->users()->sync($pivotData);
+            }
+        }
+
+        DB::commit();
+
+        return redirect()->back()->with('success', 'Data berhasil diubah.');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors($e->errors())->withInput();
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
   }
-
   
   /**
   * Remove the specified resource from storage.

@@ -23,11 +23,39 @@ class WorkingReport extends Model
     ];
 
     protected $with = [
+        'checksheet',
+        'warmingup',
+        'workresult',
         'machine',
         'region',
         'createdBy',
         'updatedBy',
     ];
+
+    public function checksheetday()
+    {
+        return $this->hasOne(checkSheetDay::class, 'working_report_id', 'id');
+    }
+
+    public function checksheetworkresult()
+    {
+        return $this->hasMany(CheckSheetWorkResult::class, 'check_sheet_day_id');
+    }
+
+    public function checksheet()
+    {
+        return $this->hasOne(checkSheet::class, 'working_report_id', 'id');
+    }
+
+    public function warmingup()
+    {
+        return $this->hasOne(WarmingUp::class, 'working_report_id', 'id');
+    }
+
+    public function workresult()
+    {
+        return $this->hasOne(WorkResult::class, 'working_report_id', 'id');
+    }
 
     public function machine()
     {

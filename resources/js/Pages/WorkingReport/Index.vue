@@ -90,15 +90,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 <style src="@/multiselect.css"></style>
 
 <template>
-    <DashboardLayout :title="__('Laporin')">
+    <DashboardLayout :title="__('Working Order')">
         <div class="transition-all duration-300" :class="{
             'pl-1 md:pl-64': open,
         }">
         <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Laporan Pekerjaan</h2>
+            <h2 class="font-bold text-2xl">Working Order</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Laporan Pekerjaan</span> 
+           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Working Order</span> 
             <slot />
         </main>
         </div>
@@ -225,7 +225,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                         </td>
                                         
                                         <td class="capitalize font-semibold text-center border-b">
-                                            {{ __(report.machine?.name ?? '-') }}
+                                            {{ report.machine ? `${report.machine.name}${report.machine.type ? ' - ' + report.machine.type : ''}` : '-' }}
                                         </td>
                                         
                                         <td class="capitalize font-semibold text-center border-b">
@@ -233,7 +233,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                         </td>
                                         
                                         <td class="capitalize font-semibold text-center border-b">
-                                            {{ __(report.date) }}
+                                            {{ new Date(report?.date).toOnlyIndonesianDate() }}
                                         </td>
                                         
                                         <td class="capitalize font-semibold text-center border-b">
@@ -247,21 +247,17 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                         <td class="px-2 py-2 border-b text-center">
                                             <div class="flex justify-center gap-2">
 
-                                                <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-                                                    v-if="can('update working report')"
-                                                >
+                                                <Button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
                                                     <Link :href="route('working-reports.detail', report.id)">
                                                         <Icon name="eye" />
-                                                        <p class="uppercase">{{ __('detail') }}</p>
                                                     </Link>
-                                                  </button>
+                                                </Button>
 
                                                 <ButtonBlue
                                                     v-if="can('update working report')"
                                                 >
                                                     <Link :href="route('working-reports.edit', report.id)">
-                                                        <Icon name="edit" />
-                                                        <p class="uppercase">{{ __('ubah') }}</p>
+                                                        <Icon name="pen" />
                                                     </Link>
                                                 </ButtonBlue>
 
@@ -269,7 +265,6 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                                     v-if="can('delete working report')"
                                                     @click.prevent="destroy(report)">
                                                     <Icon name="trash" />
-                                                    <p class="uppercase">{{ __('hapus') }}</p>
                                                 </ButtonRed>
 
                                             </div>
