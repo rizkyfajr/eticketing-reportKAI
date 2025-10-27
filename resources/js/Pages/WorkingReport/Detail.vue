@@ -502,7 +502,7 @@ const submitwarmingup = () => {
     allowOutsideClick: false,
   })
 
-  form3.post(route('warming-up.store', report.id), {
+  form3.post(route('warming-up.store', props.report.id), {
     onSuccess: () => {
       Swal.fire({
         icon: 'success',
