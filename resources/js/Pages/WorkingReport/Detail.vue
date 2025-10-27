@@ -111,26 +111,80 @@ const form3 = useForm({
     user_id: props.warmingup?.warmingup_user.map(warmingup_user => warmingup_user.user_id) || [],
 });
 
+// const form4 = useForm({
+//     id: props.workresult?.id || null,
+//     working_report_id: props.report?.id || null,
+//     machine_id: props.workresult?.machine_id || null,
+//     region_id: props.workresult?.region_id || null,
+//     antara: props.workresult?.antara || null,
+//     km_hm: props.workresult?.km_hm || null,
+//     jumlah_msp: props.workresult?.jumlah_msp || null,
+//     waktu_start_engine: props.workresult?.waktu_start_engine || null,
+//     jam_luncuran: props.workresult?.jam_luncuran || null,
+//     jam_kerja: props.workresult?.jam_kerja || null,
+//     jam_mesin: props.workresult?.jam_mesin || null,
+//     jam_genset: props.workresult?.jam_genset || null,
+//     counter_pecok: props.workresult?.counter_pecok || null,
+//     oddometer: props.workresult?.oddometer || null,
+//     penggunaan_hsd: props.workresult?.penggunaan_hsd || null,
+//     hsd_tersedia: props.workresult?.hsd_tersedia || null,
+//     pengawal_id: props.workresult?.pengawal_id || null,
+//     note: props.workresult?.note || null,
+//     user_id: props.workresult?.workresult_user.map(workresult_user => workresult_user.user_id) || [],
+// });
+
 const form4 = useForm({
     id: props.workresult?.id || null,
     working_report_id: props.report?.id || null,
     machine_id: props.workresult?.machine_id || null,
     region_id: props.workresult?.region_id || null,
-    antara: props.workresult?.antara || null,
-    km_hm: props.workresult?.km_hm || null,
-    jumlah_msp: props.workresult?.jumlah_msp || null,
+    tanggal: props.workresult?.tanggal || null,
+    cuaca: props.workresult?.cuaca || null,
+    wilayah: props.workresult?.wilayah || null,
+    petak_jalan: props.workresult?.petak_jalan || null,
+    jalur: props.workresult?.jalur || null,
+    kelas_jalan: props.workresult?.kelas_jalan || null,
+    kecepatan_lintas: props.workresult?.kecepatan_lintas || null,
+    lokasi_awal1: props.workresult?.lokasi_awal1 || null,
+    lokasi_akhir1: props.workresult?.lokasi_akhir1 || null,
+    jumlah1: props.workresult?.jumlah1 || null,
+    lokasi_awal2: props.workresult?.lokasi_awal2 || null,
+    lokasi_akhir2: props.workresult?.lokasi_akhir2 || null,
+    jumlah2: props.workresult?.jumlah2 || null,
+    lokasi_awal3: props.workresult?.lokasi_awal3 || null,
+    lokasi_akhir3: props.workresult?.lokasi_akhir3 || null,
+    jumlah3: props.workresult?.jumlah3 || null,
+    total_distance: props.workresult?.total_distance || null,
+    no_wesel1: props.workresult?.no_wesel1 || null,
+    km_hm1: props.workresult?.km_hm1 || null,
+    jumlah_wesel1: props.workresult?.jumlah_wesel1 || null,
+    no_wesel2: props.workresult?.no_wesel2 || null,
+    km_hm2: props.workresult?.km_hm2 || null,
+    jumlah_wesel2: props.workresult?.jumlah_wesel2 || null,
+    no_wesel3: props.workresult?.no_wesel3 || null,
+    km_hm3: props.workresult?.km_hm3 || null,
+    jumlah_wesel3: props.workresult?.jumlah_wesel3 || null,
+    total_wesel: props.workresult?.total_wesel || null,
     waktu_start_engine: props.workresult?.waktu_start_engine || null,
     jam_luncuran: props.workresult?.jam_luncuran || null,
     jam_kerja: props.workresult?.jam_kerja || null,
     jam_mesin: props.workresult?.jam_mesin || null,
     jam_genset: props.workresult?.jam_genset || null,
+    waktu_stop_engine: props.workresult?.waktu_stop_engine || null,
     counter_pecok: props.workresult?.counter_pecok || null,
     oddometer: props.workresult?.oddometer || null,
     penggunaan_hsd: props.workresult?.penggunaan_hsd || null,
+    penggunaan_hsd1: props.workresult?.penggunaan_hsd1 || null,
     hsd_tersedia: props.workresult?.hsd_tersedia || null,
+    oddometer_hsd: props.workresult?.oddometer_hsd || null,
     pengawal_id: props.workresult?.pengawal_id || null,
     note: props.workresult?.note || null,
-    user_id: props.workresult?.workresult_user.map(workresult_user => workresult_user.user_id) || [],
+    operator_by1: props.workresult?.operator_by1 || null,
+    operator_at1: props.workresult?.operator_at1 || null,
+    operator_by2: props.workresult?.operator_by2 || null,
+    operator_at2: props.workresult?.operator_at2 || null,
+    operator_by3: props.workresult?.operator_by3 || null,
+    operator_at3: props.workresult?.operator_at3 || null,
 });
 
 const render = ref(true)
@@ -520,7 +574,7 @@ const submitworkresult = () => {
     allowOutsideClick: false,
   })
 
-  form4.post(route('work-results.store', report.id), {
+  form4.post(route('work-results.store', props.report.id), {
     onSuccess: () => {
       Swal.fire({
         icon: 'success',
@@ -584,6 +638,60 @@ const updateworkresult = async () => {
     console.error(error);
   }
 };
+
+const canApproveWorkResult = computed(() => {
+  const workresult = props.report?.workresult
+  if (!workresult || !user?.id) return false
+
+  return (
+    (workresult.operator_by1 === user.id && !workresult.operator_at1) ||
+    (workresult.operator_by2 === user.id && !workresult.operator_at2) ||
+    (workresult.operator_by3 === user.id && !workresult.operator_at3) 
+  )
+})
+
+const approveworkresult = async () => {
+  const workresult = props.report?.workresult
+  if (!workresult) return
+
+  const confirm = await Swal.fire({
+    title: "Apakah Anda yakin?",
+    text: "Anda akan menyetujui data ini.",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Ya, setujui",
+    cancelButtonText: "Batal",
+  })
+
+  if (!confirm.isConfirmed) return 
+
+  try {
+    const res = await axios.post(route("workresult.approve"), {
+      id: workresult.id,
+    })
+
+    const now = new Date().toISOString()
+    if (workresult.operator_by1 === user.id) workresult.operator_at1 = now
+    if (workresult.operator_by2 === user.id) workresult.operator_at2 = now
+    if (workresult.operator_by3 === user.id) workresult.operator_at3 = now
+
+    Swal.fire({
+      icon: "success",
+      title: res.data.message || "Berhasil disetujui!",
+      timer: 1500,
+      showConfirmButton: false,
+    })
+  } catch (error) {
+    console.error(error)
+    Swal.fire({
+      icon: "error",
+      title: "Gagal approve!",
+      text: error.response?.data?.message || error.message || "Terjadi kesalahan saat menyetujui.",
+    })
+  }
+}
 
 const currentSection = ref('report');
 
@@ -1103,7 +1211,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <!-- Tabel Catatan -->
                 <tfoot>
                   <tr>
-                    <td colspan="9" class="border border-black align-top px-2 py-1 font-semibold text-sm w-[70%]">
+                    <td colspan="9" class="border border-black align-top px-2 py-1 font-semibold text-sm w-[40%]">
                       Catatan riwayat gangguan :
                       <textarea
                         v-model="form2.catatan_gangguan"
@@ -1697,7 +1805,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             <!-- section workresult -->
             <div v-if="currentSection === 'workresult'" class="tab-pane fade p-2" id="list-workresult" role="tabpanel" aria-labelledby="list-warmingup-list">
 
-							<div class="row my-2">
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="machine_id" class="w-1/3">
@@ -1708,7 +1816,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                         <Select
                           v-model="form4.machine_id"
                           :options="machines.map(machine => ({
-                            label: `${machine.name} — ${machine.type}`,
+                            label: `${machine.name} — ${machine.type} — ${machine.no_sarana}`,
                             value: machine.id,
                           }))"
                           :searchable="true"
@@ -1722,9 +1830,190 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :error="form4.errors.machine_id"
                   />
                 </div> 
+
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="tanggal" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Hari/Tanggal') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.tanggal"
+                          :placeholder="__('Hari/Tanggal')"
+                          type="datetime-local"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.tanggal }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.tanggal" />
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="cuaca" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('cuaca') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.cuaca"
+                          :placeholder="__('cuaca')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.cuaca }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.cuaca" />
+                </div>
+              </div>
+              <br>
+
+              <div class="font-bold rounded-md text-sm">A. DATA WILAYAH</div>
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="wilayah" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('wilayah resor') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.wilayah"
+                          :placeholder="__('wilayah resor')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.wilayah }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.wilayah" />
+                </div>
               </div>
 
-              <div class="row my-2">
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="petak_jalan" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('petak jalan') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.petak_jalan"
+                          :placeholder="__('petak jalan')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.petak_jalan }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.petak_jalan" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="jalur" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('jalur') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.jalur"
+                          :placeholder="__('jalur')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.jalur }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.jalur" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="kelas_jalan" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('kelas jalan') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.kelas_jalan"
+                          :placeholder="__('kelas jalan')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.kelas_jalan }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.kelas_jalan" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-1 mb-1 rounded-md text-sm">
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="kecepatan_lintas" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('kecepatan lintas') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.kecepatan_lintas"
+                          :placeholder="__('kecepatan lintas')"
+                          type="text"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.kecepatan_lintas }}</span>
+                      </div>
+                    </template>
+
+                  </div>
+                  <InputError :error="form4.errors.kecepatan_lintas" />
+                </div>
+              </div>
+              <br>
+
+              <!-- <div class="row my-2">
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="region_id" class="w-1/3">
@@ -1749,97 +2038,165 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :error="form4.errors.region_id"
                   />
                 </div> 
-              </div>
+              </div> -->
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="antara" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Antara') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.antara"
-                          :placeholder="__('Antara')"
-                          type="text"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.antara }}</span>
-                      </div>
-                    </template>
+              <div class="rounded-md text-sm">
+                <div class="font-bold mb-2">B. DATA PEKERJAAN</div>
 
+                <div class="space-y-2">
+                  <!-- Baris 1 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2">Lokasi (Km/Hm)</label>
+
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-1">
+                      <Input v-model="form4.lokasi_awal1" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">s/d</span>
+                      <Input v-model="form4.lokasi_akhir1" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah (Km/Hm)</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah1" :placeholder="__('Jumlah Km/Hm')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
                   </div>
-                  <InputError :error="form4.errors.antara" />
+
+                  <!-- Baris 2 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">Lokasi (Km/Hm)</label>
+
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-1">
+                      <Input v-model="form4.lokasi_awal2" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">s/d</span>
+                      <Input v-model="form4.lokasi_akhir2" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah (Km/Hm)</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah2" :placeholder="__('Jumlah Km/Hm')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
+
+                  <!-- Baris 3 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">Lokasi (Km/Hm)</label>
+
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-2">
+                      <Input v-model="form4.lokasi_awal3" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">s/d</span>
+                      <Input v-model="form4.lokasi_akhir3" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah (Km/Hm)</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah3" :placeholder="__('Jumlah Km/Hm')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
+
+                  <!-- Baris Total -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">Lokasi (Km/Hm)</label>
+                    <div class="md:col-span-6"></div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1 font-semibold">
+                      <span class="whitespace-nowrap">Total (Km/Hm)</span>
+                      <span>:</span>
+                      <Input v-model="form4.total_distance" :placeholder="__('Total Km/Hm')" type="text" class="dot-input flex-1 min-w-[150px] text-right font-semibold" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <br><br>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="km_hm" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Km/Hm') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.km_hm"
-                          :placeholder="__('Km/Hm')"
-                          type="number"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.km_hm }}</span>
-                      </div>
-                    </template>
+              <div class="rounded-md text-sm">
+                <div class="space-y-2">
+                  <!-- Baris 1 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2">No Wesel</label>
 
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-2">
+                      <Input v-model="form4.no_wesel1" :placeholder="__('No Wesel')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">Km/Hm : </span>
+                      <Input v-model="form4.km_hm1" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah Wesel</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah_wesel1" :placeholder="__('Jumlah Wesel')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
                   </div>
-                  <InputError :error="form4.errors.km_hm" />
+
+                  <!-- Baris 2 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">No Wesel</label>
+
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-2">
+                      <Input v-model="form4.no_wesel2" :placeholder="__('No Wesel')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">Km/Hm : </span>
+                      <Input v-model="form4.km_hm2" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah Wesel</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah_wesel2" :placeholder="__('Jumlah Wesel')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
+
+                  <!-- Baris 3 -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">No Wesel</label>
+
+                    <div class="md:col-span-6 flex flex-wrap items-center gap-2">
+                      <Input v-model="form4.no_wesel3" :placeholder="__('No Wesel')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                      <span class="text-center">Km/Hm : </span>
+                      <Input v-model="form4.km_hm3" :placeholder="__('Km/Hm')" type="text" class="dot-input flex-1 min-w-[100px]" />
+                    </div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1">
+                      <span class="whitespace-nowrap">Jumlah Wesel</span>
+                      <span>:</span>
+                      <Input v-model="form4.jumlah_wesel3" :placeholder="__('Jumlah Wesel')" type="text" class="dot-input flex-1 min-w-[150px] text-right" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
+
+                  <!-- Baris Total -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                    <label class="md:col-span-2 invisible">No Wesel</label>
+                    <div class="md:col-span-6"></div>
+
+                    <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-1 font-semibold">
+                      <span class="whitespace-nowrap">Total Wesel</span>
+                      <span>:</span>
+                      <Input v-model="form4.total_wesel" :placeholder="__('Total Wesel')" type="text" class="dot-input flex-1 min-w-[150px] text-right font-semibold" />
+                      <span>M'sp</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <br>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="jumlah_msp" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Jumlah MSP') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.jumlah_msp"
-                          :placeholder="__('Jumlah MSP')"
-                          type="number"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.jumlah_msp }}</span>
-                      </div>
-                    </template>
-
-                  </div>
-                  <InputError :error="form4.errors.jumlah_msp" />
-                </div>
-              </div>
-
-							<div class="row my-2">
+              <div class="grid grid-cols-2 gap-1 mb-4 text-sm">
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="waktu_start_engine" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Waktu Start Engine') }}
+                      {{ __('waktu Start Engine') }}
                     </label>
                     
                       <div class="w-2/3">
                         <Input
                           v-model="form4.waktu_start_engine"
-                          :placeholder="__('Waktu Start Engine')"
+                          :placeholder="__('waktu Start Engine')"
                           type="datetime-local"
                         />
                       </div>
@@ -1853,9 +2210,31 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   </div>
                   <InputError :error="form4.errors.waktu_start_engine" />
                 </div>
-              </div>
+                
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="waktu_stop_engine" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Waktu Stop Engine') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.waktu_stop_engine"
+                          :placeholder="__('Waktu Stop Engine')"
+                          type="datetime-local"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.waktu_stop_engine }}</span>
+                      </div>
+                    </template>
 
-							<div class="row my-2">
+                  </div>
+                  <InputError :error="form4.errors.waktu_stop_engine" />
+                </div>
+                
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="jam_luncuran" class="w-1/3 lowercase first-letter:capitalize">
@@ -1880,9 +2259,31 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   </div>
                   <InputError :error="form4.errors.jam_luncuran" />
                 </div>
-              </div>
+                
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="counter_pecok" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Counter Pecok') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.counter_pecok"
+                          :placeholder="__('Counter Pecok')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.counter_pecok }}</span>
+                      </div>
+                    </template>
 
-							<div class="row my-2">
+                  </div>
+                  <InputError :error="form4.errors.counter_pecok" />
+                </div>
+                
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="jam_kerja" class="w-1/3 lowercase first-letter:capitalize">
@@ -1907,9 +2308,31 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   </div>
                   <InputError :error="form4.errors.jam_kerja" />
                 </div>
-              </div>
+                
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center space-x-2">
+                    <label for="oddometer" class="w-1/3 lowercase first-letter:capitalize">
+                      {{ __('Oddo Meter') }}
+                    </label>
+                    
+                      <div class="w-2/3">
+                        <Input
+                          v-model="form4.oddometer"
+                          :placeholder="__('Oddo Meter')"
+                          type="number"
+                        />
+                      </div>
+                      
+                    <template>
+                      <div class="w-2/3">
+                        <span>{{ report.workingresult?.oddometer }}</span>
+                      </div>
+                    </template>
 
-							<div class="row my-2">
+                  </div>
+                  <InputError :error="form4.errors.oddometer" />
+                </div>
+                
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="jam_mesin" class="w-1/3 lowercase first-letter:capitalize">
@@ -1935,18 +2358,18 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   <InputError :error="form4.errors.jam_mesin" />
                 </div>
               </div>
-
-							<div class="row my-2">
+                
+              <div class="grid grid-cols-2 gap-1 mb-4 text-sm">
                 <div class="flex flex-col space-y-2">
                   <div class="flex items-center space-x-2">
                     <label for="jam_genset" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Jam Genset') }}
+                      {{ __('Jam Generator') }}
                     </label>
                     
                       <div class="w-2/3">
                         <Input
                           v-model="form4.jam_genset"
-                          :placeholder="__('Jam Genset')"
+                          :placeholder="__('Jam Generator')"
                           type="time"
                           step="1"
                         />
@@ -1961,198 +2384,308 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   </div>
                   <InputError :error="form4.errors.jam_genset" />
                 </div>
+
               </div>
+              <br>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="counter_pecok" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Counter Pecok') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.counter_pecok"
-                          :placeholder="__('Counter Pecok')"
-                          type="number"
-                        />
-                      </div>
+              <div class="rounded-md text-sm">
+              <div class="font-bold mb-2">C. BAHAN BAKAR</div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="penggunaan_hsd" class="w-1/3 lowercase first-letter:capitalize">
+                        {{ __('Pemakaian HSD') }}
+                      </label>
                       
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.counter_pecok }}</span>
-                      </div>
-                    </template>
+                        <div class="w-2/3">
+                          <Input
+                            v-model="form4.penggunaan_hsd"
+                            :placeholder="__('Pemakaian HSD')"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        
+                      <template>
+                        <div class="w-2/3">
+                          <span>{{ report.workingresult?.penggunaan_hsd }}</span>
+                        </div>
+                      </template>
 
+                    </div>
+                    <InputError :error="form4.errors.penggunaan_hsd" />
                   </div>
-                  <InputError :error="form4.errors.counter_pecok" />
+
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="hsd_tersedia" class="w-1/3 lowercase first-letter:capitalize">
+                        {{ __('HSD Tersedia') }}
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Input
+                            v-model="form4.hsd_tersedia"
+                            :placeholder="__('HSD Tersedia')"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        
+                      <template>
+                        <div class="w-2/3">
+                          <span>{{ report.workingresult?.hsd_tersedia }}</span>
+                        </div>
+                      </template>
+
+                    </div>
+                    <InputError :error="form4.errors.hsd_tersedia" />
+                  </div>
+
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="penggunaan_hsd1" class="w-1/3 lowercase first-letter:capitalize">
+                        <!-- {{ __('HSD Tersedia') }} -->
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Input
+                            v-model="form4.penggunaan_hsd1"
+                            :placeholder="__('HSD Tersedia')"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        
+                      <template>
+                        <div class="w-2/3">
+                          <span>{{ report.workingresult?.penggunaan_hsd1 }}</span>
+                        </div>
+                      </template>
+
+                    </div>
+                    <InputError :error="form4.errors.penggunaan_hsd1" />
+                  </div>
+
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <label for="oddometer_hsd" class="w-1/3 lowercase first-letter:capitalize">
+                        {{ __('Oddomeeter hsd') }}
+                      </label>
+                      
+                        <div class="w-2/3">
+                          <Input
+                            v-model="form4.oddometer_hsd"
+                            :placeholder="__('Oddomeeter hsd')"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        
+                      <template>
+                        <div class="w-2/3">
+                          <span>{{ report.workingresult?.oddometer_hsd }}</span>
+                        </div>
+                      </template>
+
+                    </div>
+                    <InputError :error="form4.errors.oddometer_hsd" />
+                  </div>
+                </div>
+                <br>
+
+                <div class="rounded-md text-sm">
+                <div class="font-bold mb-2">D. DATA PERSONEL</div>
+                  <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <label for="operator_by1" class="w-1/3">
+                          {{ __('Operator 1') }}
+                        </label>
+                        
+                          <div class="w-2/3">
+                            <Select
+                              v-model="form4.operator_by1"
+                              :options="users.filter(user => user.id !== 1).map(user => ({
+                                label: user.name,
+                                value: user.id,
+                              }))"
+                              :searchable="true"
+                              placeholder="Pilih Operator"
+                              required
+                            />
+                          </div>
+                      </div>
+
+                      <InputError
+                        :error="form4.errors.operator_by1"
+                      />
+                    </div> 
+                    
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <label for="pengawal_id" class="w-1/3">
+                          {{ __('Pengawal') }}
+                        </label>
+                        
+                          <div class="w-2/3">
+                            <Select
+                              v-model="form4.pengawal_id"
+                              :options="users.filter(user => user.id !== 1).map(user => ({
+                                label: user.name,
+                                value: user.id,
+                              }))"
+                              :searchable="true"
+                              placeholder="Pilih Pengawal"
+                              required
+                            />
+                          </div>
+                      </div>
+
+                      <InputError
+                        :error="form4.errors.pengawal_id"
+                      />
+                    </div> 
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <label for="operator_by2" class="w-1/3">
+                          {{ __('Operator 2') }}
+                        </label>
+                        
+                          <div class="w-2/3">
+                            <Select
+                              v-model="form4.operator_by2"
+                              :options="users.filter(user => user.id !== 1).map(user => ({
+                                label: user.name,
+                                value: user.id,
+                              }))"
+                              :searchable="true"
+                              placeholder="Pilih Operator"
+                              required
+                            />
+                          </div>
+                      </div>
+
+                      <InputError
+                        :error="form4.errors.operator_by2"
+                      />
+                    </div> 
+                  </div> 
+                  
+                  <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <label for="operator_by3" class="w-1/3">
+                          {{ __('Operator 3') }}
+                        </label>
+                        
+                          <div class="w-2/3">
+                            <Select
+                              v-model="form4.operator_by3"
+                              :options="users.filter(user => user.id !== 1).map(user => ({
+                                label: user.name,
+                                value: user.id,
+                              }))"
+                              :searchable="true"
+                              placeholder="Pilih Operator"
+                              required
+                            />
+                          </div>
+                      </div>
+
+                      <InputError
+                        :error="form4.errors.operator_by3"
+                      />
+                    </div> 
+                  </div> 
+
+                  <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="flex flex-col space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <label for="note" class="w-1/3 lowercase first-letter:capitalize">
+                          {{ __('Keterangan') }}
+                        </label>
+                        
+                          <div class="w-2/3">
+                            <TextArea
+                              v-model="form4.note"
+                              :placeholder="__('Keterangan')"
+                              type="text"
+                            />
+                          </div>
+                          
+                        <template>
+                          <div class="w-2/3">
+                            <span>{{ report.workingresult?.note }}</span>
+                          </div>
+                        </template>
+
+                      </div>
+                      <InputError :error="form4.errors.note" />
+                    </div>
+                  </div>
                 </div>
               </div>
+              <br>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="oddometer" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Oddo Meter') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.oddometer"
-                          :placeholder="__('Oddo Meter')"
-                          type="number"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.oddometer }}</span>
-                      </div>
-                    </template>
-
-                  </div>
-                  <InputError :error="form4.errors.oddometer" />
-                </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
+              <!-- Operator 1 -->
+              <div class="flex flex-col items-center border border-gray-300 rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800">Operator 1</h3>
+                <p class="mt-2 text-gray-700">
+                  {{ report.workresult?.operator1?.name || '-' }}
+                </p>
+                <p class="mt-2 text-sm text-gray-500">
+                  Disetujui pada: 
+                  <span class="font-medium text-gray-700">
+                    {{ report.workresult?.operator_at1
+                      ? formatDate (report.workresult.operator_at1)
+                      : '-' }}
+                  </span>
+                </p>
               </div>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="penggunaan_hsd" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Penggunaan HSD') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.penggunaan_hsd"
-                          :placeholder="__('Penggunaan HSD')"
-                          type="number"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.penggunaan_hsd }}</span>
-                      </div>
-                    </template>
-
-                  </div>
-                  <InputError :error="form4.errors.penggunaan_hsd" />
-                </div>
+              <!-- Operator 2 -->
+              <div class="flex flex-col items-center border border-gray-300 rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800">Operator 2</h3>
+                <p class="mt-2 text-gray-700">
+                  {{ report.workresult?.operator2?.name || '-' }}
+                </p>
+                <p class="mt-2 text-sm text-gray-500">
+                  Disetujui pada: 
+                  <span class="font-medium text-gray-700">
+                    {{ report.workresult?.operator_at2
+                      ? formatDate(report.workresult.operator_at2)
+                      : '-' }}
+                  </span>
+                </p>
               </div>
 
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="hsd_tersedia" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('HSD Tersedia') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Input
-                          v-model="form4.hsd_tersedia"
-                          :placeholder="__('HSD Tersedia')"
-                          type="number"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.hsd_tersedia }}</span>
-                      </div>
-                    </template>
-
-                  </div>
-                  <InputError :error="form4.errors.hsd_tersedia" />
-                </div>
+              <!-- Operator 3 -->
+              <div class="flex flex-col items-center border border-gray-300 rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800">Operator 3</h3>
+                <p class="mt-2 text-gray-700">
+                  {{ report.workresult?.operator3?.name || '-' }}
+                </p>
+                <p class="mt-2 text-sm text-gray-500">
+                  Disetujui pada: 
+                  <span class="font-medium text-gray-700">
+                    {{ report.workresult?.operator3_approved_at
+                      ? formatDate(report.workresult.operator3_approved_at)
+                      : '-' }}
+                  </span>
+                </p>
               </div>
+            </div>
 
-              <div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="user_id" class="w-1/3">
-                      {{ __('Crew') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Select
-                          v-model="form4.user_id"
-                          :options="users.filter(user => user.id !== 1).map(user => ({
-                            label: user.name,
-                            value: user.id,
-                          }))"
-                          :searchable="true"
-                          mode="tags"
-                          placeholder="Pilih Crew"
-                          required
-                        />
-                      </div>
-                  </div>
-
-                  <InputError
-                    :error="form4.errors.user_id"
-                  />
-                </div> 
-              </div>
-
-              <div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="pengawal_id" class="w-1/3">
-                      {{ __('Pengawal') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <Select
-                          v-model="form4.pengawal_id"
-                          :options="users.filter(user => user.id !== 1).map(user => ({
-                            label: user.name,
-                            value: user.id,
-                          }))"
-                          :searchable="true"
-                          placeholder="Pilih Pengawal"
-                          required
-                        />
-                      </div>
-                  </div>
-
-                  <InputError
-                    :error="form4.errors.pengawal_id"
-                  />
-                </div> 
-              </div>
-
-							<div class="row my-2">
-                <div class="flex flex-col space-y-2">
-                  <div class="flex items-center space-x-2">
-                    <label for="note" class="w-1/3 lowercase first-letter:capitalize">
-                      {{ __('Keterangan') }}
-                    </label>
-                    
-                      <div class="w-2/3">
-                        <TextArea
-                          v-model="form4.note"
-                          :placeholder="__('Keterangan')"
-                          type="text"
-                        />
-                      </div>
-                      
-                    <template>
-                      <div class="w-2/3">
-                        <span>{{ report.workingresult?.note }}</span>
-                      </div>
-                    </template>
-
-                  </div>
-                  <InputError :error="form4.errors.note" />
-                </div>
-              </div>
+              <br>
 							
 							<div class="d-flex justify-content-end mt-3">
 								<Button v-if="!report.workresult?.id" class="bg-green-700 hover:bg-green-900 float-right mr-2" @click.prevent="submitworkresult()">Simpan</Button>
-                <Button v-else class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updateworkresult()">Ubah</Button>
+                <Button v-if="report.workresult?.id" class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="updateworkresult()">Ubah</Button>
+                <Button v-if="canApproveWorkResult" class="bg-blue-700 hover:bg-blue-900 float-right mr-2" @click.prevent="approveworkresult()">Approve</Button>
 							</div>
 						</div>
             <!-- section workresult -->

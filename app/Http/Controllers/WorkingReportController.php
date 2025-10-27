@@ -33,7 +33,7 @@ class WorkingReportController extends Controller
           'workresult'  => $report->workresult,
           'machines'    => MasterMachine::select('id', 'name', 'type')->get(),
           'regions'     => MasterRegion::select('id', 'name')->get(),
-          'users'       => User::select('id', 'name')->get(),
+          'users'       => User::select('id', 'name', 'username')->get(),
       ]);
   }
 
@@ -90,9 +90,9 @@ class WorkingReportController extends Controller
           'warmingup_user'  => $report->warmingup_user ?? null,
           'workresult'  => $report->workresult ?? null,
           'workresult_user'  => $report->workresult_user ?? null,
-          'machines'    => MasterMachine::select('id', 'name', 'type')->get(),
+          'machines'    => MasterMachine::select('id', 'name', 'type', 'no_sarana')->get(),
           'regions'     => MasterRegion::select('id', 'name')->get(),
-          'users'       => User::select('id', 'name')->get(),
+          'users'       => User::select('id', 'name', 'username')->get(),
       ]);
   }
   
@@ -158,7 +158,7 @@ class WorkingReportController extends Controller
 
       return Inertia::render('WorkingReport/Update', [
           'report' => $report,
-          'machines' => MasterMachine::select('id', 'name', 'type')->get(),
+          'machines' => MasterMachine::select('id', 'name', 'type', 'no_sarana')->get(),
           'regions' => MasterRegion::select('id', 'name')->get(),
           'users' => User::select('id', 'name')->get(),
       ]);
@@ -232,7 +232,7 @@ class WorkingReportController extends Controller
     //     });
     // })
 
-    ->when(!$user->hasRole(['superuser', 'it']), function (Builder $query) use ($user) {
+    ->when(!$user->hasRole(['superuser']), function (Builder $query) use ($user) {
         $query->where(function (Builder $q) use ($user) {
             // Kondisi 1: Hanya data yang dibuat oleh user login
             $q->where('created_by_id', $user->id)
@@ -243,6 +243,14 @@ class WorkingReportController extends Controller
                             ->orWhere('operator_by2', $user->id)
                             ->orWhere('operator_by3', $user->id)
                             ->orWhere('operator_by4', $user->id);
+                    });
+                })
+
+                ->orWhereHas('workresult', function (Builder $wr2) use ($user) {
+                    $wr2->where(function ($sub2) use ($user) {
+                        $sub2->where('operator_by1', $user->id)
+                            ->orWhere('operator_by2', $user->id)
+                            ->orWhere('operator_by3', $user->id);
                     });
                 });
         });

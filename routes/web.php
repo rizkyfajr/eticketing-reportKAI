@@ -128,6 +128,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::post('/warming-up/paginate', [App\Http\Controllers\WarmingUpController::class, 'paginate'])
         ->name('warming-up.paginate');
 
+    Route::post('/workresult/approve', [App\Http\Controllers\WorkResultController::class, 'approve'])->name('workresult.approve');
     Route::resource('work-results', App\Http\Controllers\WorkResultController::class);
     Route::post('/work-results/paginate', [App\Http\Controllers\WorkResultController::class, 'paginate'])
         ->name('work-results.paginate');      
