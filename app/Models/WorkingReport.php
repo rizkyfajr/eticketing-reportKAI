@@ -76,4 +76,10 @@ class WorkingReport extends Model
     {
         return $this->belongsTo(User::class, 'updated_by_id');
     }
+
+    public function maintenanceOrders()
+    {
+        return $this->hasMany(MaintenanceOrder::class);
+    }
+
 }

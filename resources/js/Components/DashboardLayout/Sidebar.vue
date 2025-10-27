@@ -45,10 +45,10 @@ const f = async () => {
   <div class="flex flex-col w-full h-full bg-inherit overflow-y-auto max-h-screen scrollbar" style="margin-top: -5.25rem;">
     <div class="">
       <h1 v-show="open" class=" text-lg font-bold w-full text-white mb-5 pt-5 transition-all ease-in-out duration-150 flex items-center">
-        <img class="w-[55px]" src="../../../../public/assets/1.png" alt="">Ticketing
+        <img class="w-[55px]" src="../../../../public/assets/TJFE (2).png" alt="">TJFE
       </h1>
       <div v-show="!open" class="flex items-center w-full text-white mb-5 pt-5 transition-all ease-in-out duration-150">
-        <img class="w-[2.5rem]" src="../../../../public/assets/1.png" style="margin-left: 0.5rem;"></div>
+        <img class="w-[2.5rem]" src="../../../../public/assets/TJFE (2).png" style="margin-left: 0.5rem;"></div>
     </div>
     <transition name="op" mode="in-out">
       <Builder v-if="menus.length" :menus="menus" :open="open" />
