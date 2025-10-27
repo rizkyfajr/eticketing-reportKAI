@@ -40,17 +40,23 @@ class WorkingReportController extends Controller
   public function detail(DataTableRequest $request, WorkingReport $report, WorkResult $workresult)
   {
     //   $report->load('checksheetday.dayresults');
-      $report->load('checksheetday.dayresults', 'checksheetday.checksheetworkresult');
-      $masters = CheckSheetMasterDay::orderByRaw("
-        CASE 
-            WHEN LOWER(group_name) LIKE 'engine%' THEN 1
-            WHEN LOWER(group_name) LIKE 'mekanik%' THEN 2
-            WHEN LOWER(group_name) LIKE 'pneumatic%' THEN 3
-            WHEN LOWER(group_name) LIKE 'hydraulic%' OR LOWER(group_name) LIKE 'hidrolik%' THEN 4
-            WHEN LOWER(group_name) LIKE 'elektrik%' OR LOWER(group_name) LIKE 'electrical%' THEN 5
-            WHEN LOWER(group_name) LIKE 'peralatan keselamatan%' THEN 6
-            ELSE 7
-        END
+        $report->load('checksheetday.dayresults', 'checksheetday.checksheetworkresult', 'machine');
+
+        $machineType = $report->machine?->name;
+
+        $masters = CheckSheetMasterDay::when($machineType, function ($query, $machineType) {
+            $query->where('jenis_mesin', $machineType);
+        })
+        ->orderByRaw("
+            CASE 
+                WHEN LOWER(group_name) LIKE 'engine%' THEN 1
+                WHEN LOWER(group_name) LIKE 'mekanik%' THEN 2
+                WHEN LOWER(group_name) LIKE 'pneumatic%' THEN 3
+                WHEN LOWER(group_name) LIKE 'hydraulic%' OR LOWER(group_name) LIKE 'hidrolik%' THEN 4
+                WHEN LOWER(group_name) LIKE 'elektrik%' OR LOWER(group_name) LIKE 'electrical%' THEN 5
+                WHEN LOWER(group_name) LIKE 'peralatan keselamatan%' THEN 6
+                ELSE 7
+            END
         ")->get();
 
       $existingResults = $report->checksheetday

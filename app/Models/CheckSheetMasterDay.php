@@ -18,6 +18,7 @@ class CheckSheetMasterDay extends Model
       'rujukan',
       'nilai_rujukan',
       'satuan',
+      'jenis_mesin',
   ];
 
   public function dayresults()

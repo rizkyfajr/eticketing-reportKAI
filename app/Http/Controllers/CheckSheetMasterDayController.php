@@ -48,6 +48,7 @@ class CheckSheetMasterDayController extends Controller
         'rujukan'          => 'nullable|string|max:255',
         'nilai_rujukan'    => 'nullable|string|max:255',
         'satuan'           => 'nullable|string|max:50',
+        'jenis_mesin'      => 'nullable|in:MTT,PBR',
     ]);
 
     $komponen = CheckSheetMasterDay::create([
@@ -57,6 +58,7 @@ class CheckSheetMasterDayController extends Controller
         'rujukan'          => $request->rujukan,
         'nilai_rujukan'    => $request->nilai_rujukan,
         'satuan'           => $request->satuan,
+        'jenis_mesin'      => $request->jenis_mesin,
     ]);
 
     if ($komponen) {
@@ -109,6 +111,7 @@ class CheckSheetMasterDayController extends Controller
           'rujukan'          => 'nullable|string|max:255',
           'nilai_rujukan'    => 'nullable|string|max:255',
           'satuan'           => 'nullable|string|max:50',
+          'jenis_mesin'      => 'nullable|in:MTT,PBR',
       ]);
 
       $komponen->update([
@@ -118,6 +121,7 @@ class CheckSheetMasterDayController extends Controller
           'rujukan'          => $request->rujukan,
           'nilai_rujukan'    => $request->nilai_rujukan,
           'satuan'           => $request->satuan,
+          'jenis_mesin'      => $request->jenis_mesin,
       ]);
 
       if ($komponen) {
@@ -176,7 +180,7 @@ class CheckSheetMasterDayController extends Controller
     ->when(!$user->hasRole(['superuser', 'it']), fn (Builder $query) => 
         $query->where('created_by_id', $user->id)
     )
-    ->select(['id', 'group_name', 'komponen', 'rujukan', 'satuan', 'urutan', 'nilai_rujukan'])
+    ->select(['id', 'group_name', 'komponen', 'rujukan', 'satuan', 'urutan', 'nilai_rujukan', 'jenis_mesin'])
     ->paginate($request->per_page ?: 10);
 
     return response()->json($machines);
