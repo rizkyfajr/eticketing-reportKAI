@@ -79,9 +79,14 @@ onUpdated(fetch)
   <div class="w-full flex flex-col">
     <button
       @click.prevent="show = ! show"
-      :class="`${themes().get('', 'text-gray-500 ')} ${active ? 'text-white' : 'hover:text-white'} pl-${padding !== 0 && padding}`"
       :title="menu.name"
-      class="w-full p-4 px-4 py-3 "
+      :class="[
+        'w-full px-4 py-3', // Ukuran padding
+        'text-gray-600', // 1. Warna teks default
+        'hover:bg-gray-100 hover:text-gray-900', // 2. Style hover (background + teks gelap)
+        active ? 'bg-blue-50 text-blue-600' : '', // 3. Style aktif (background + teks gelap)
+        `pl-${padding !== 0 && padding}` // 4. Padding dinamis Anda (tetap berfungsi)
+      ]"
     >
       <div class="flex items-center justify-center space-x-2 ">
         <Icon :name="menu.icon" />
@@ -95,12 +100,10 @@ onUpdated(fetch)
                 {{ counter }}
               </p>
             </div>
-            <!-- Icon Drop Down -->
-            <!-- <Icon name="caret-left" class="transition-all ease-in-out duration-150 " :class="show && '-rotate-90'" /> -->
             <svg :class="show && '-rotate-180'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" data-slot="icon" class="w-5 h-5 transition-all ease-in-out duration-150 ">
             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-             </svg>
-           </div>
+              </svg>
+            </div>
         </template>
       </div>
     </button>
@@ -112,4 +115,3 @@ onUpdated(fetch)
     </Transition>
   </div>
 </template>
-

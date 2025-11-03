@@ -52,9 +52,14 @@ onUpdated(fetch)
 <template>
   <Link
     :href="link"
-    :class="`${themes().get('', 'text-gray-500')} ${active ? 'text-white' : 'hover:text-white'} pl-${padding !== 0 && padding}`"
     :title="menu.name"
-    class="w-full px-4 py-3 active:text-white focus:text-white"
+    :class="[
+      'w-full px-4 py-3', // Ukuran padding
+      'text-gray-600', // 1. Warna teks default
+      'hover:bg-gray-100 hover:text-gray-900', // 2. Style hover (background + teks gelap)
+      active ? 'bg-blue-50 text-blue-600' : '', // 3. Style aktif (background + teks gelap)
+      `pl-${padding !== 0 && padding}` // 4. Padding dinamis Anda (tetap berfungsi)
+    ]"
   >
     <div class="flex items-center" :class="{ 'justify-between': open, 'justify-center': !open }">
       <div class="flex items-center space-x-2 ">

@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, onUpdated, ref } from 'vue'
+import { getCurrentInstance, onMounted, onUpdated, ref } from 'vue' // Pastikan onMounted di-import
 import axios from 'axios'
 import { usePage } from '@inertiajs/inertia-vue3'
 import Builder from './Sidebar/Builder.vue'
@@ -25,12 +25,23 @@ const f = async () => {
       showCloseButton: true,
     })
 
-    response.isConfirmed && fetch()
+    // PERBAIKAN 1: Memanggil fungsi yang benar (f)
+    response.isConfirmed && f()
   }
 }
+
+// PERBAIKAN 2: Panggil fungsi saat komponen dimuat
+onMounted(() => {
+  // Kita bisa cek jika menus dari props sudah ada,
+  // jika tidak, baru kita fetch.
+  if (!menus.value || menus.value.length === 0) {
+    f()
+  }
+})
 </script>
 
 <style scoped>
+/* Transisi Anda sudah bagus, tidak perlu diubah */
 .op-enter-active, .op-leave-active {
   transition: all 50ms ease-in-out;
   opacity: 1;
@@ -42,14 +53,8 @@ const f = async () => {
 </style>
 
 <template>
-  <div class="flex flex-col w-full h-full bg-inherit overflow-y-auto max-h-screen scrollbar" style="margin-top: -5.25rem;">
-    <div class="">
-      <h1 v-show="open" class=" text-lg font-bold w-full text-white mb-5 pt-5 transition-all ease-in-out duration-150 flex items-center">
-        <img class="w-[55px]" src="../../../../public/assets/TJFE (2).png" alt="">TJFE
-      </h1>
-      <div v-show="!open" class="flex items-center w-full text-white mb-5 pt-5 transition-all ease-in-out duration-150">
-        <img class="w-[2.5rem]" src="../../../../public/assets/TJFE (2).png" style="margin-left: 0.5rem;"></div>
-    </div>
+  <div class="flex flex-col w-full">
+
     <transition name="op" mode="in-out">
       <Builder v-if="menus.length" :menus="menus" :open="open" />
     </transition>
