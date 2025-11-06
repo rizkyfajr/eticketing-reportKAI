@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import { Head, usePage } from '@inertiajs/inertia-vue3'
 import Toggler from '@/Components/DashboardLayout/SidebarToggler.vue'
 import TopbarDropdown from '@/Components/DashboardLayout/TopbarDropdown.vue'
@@ -7,6 +7,14 @@ import Sidebar from '@/Components/DashboardLayout/Sidebar.vue';
 
 defineProps({
   title: String,
+})
+
+const path = computed(() => window.location.pathname)
+const displayTitle = computed(() => {
+  const segments = path.value.split('/').filter(Boolean)
+  if (segments.length === 0) return 'Home'
+  const last = segments[segments.length - 1]
+  return 'Home - ' + last.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 })
 
 const { $config } = usePage().props.value
@@ -46,7 +54,7 @@ onUnmounted(() => document.removeEventListener('keyup', q))
 <template>
   <div class="font-sans w-full h-full min-h-screen bg-slate-50">
     <Head :title="title" />
-<div class="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-gray-200 bg-blue-5/10 bg-gradient-to-r from-orange-600 to-orange-400 px-4 text-white shadow">
+    <div class="sticky top-0 z-30 flex h-11 w-full items-center justify-between border-b border-gray-200 bg-blue-5/10 bg-gradient-to-r from-blue-600 to-blue-400 px-4 text-white shadow">
       <button
         @click="open = !open"
         class="md:hidden p-2 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-indigo-700"
@@ -63,6 +71,14 @@ onUnmounted(() => document.removeEventListener('keyup', q))
       </div>
     </div>
 
+    <div class="sticky top-0 z-30 w-full border-b border-gray-200 bg-gradient-to-r from-white to-gray-50 shadow-sm md:pl-16 lg:pl-64">
+      <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center space-x-2 text-gray-700 text-sm font-semibold tracking-wide">
+          <i class="text-gray-400 text-xs"></i>
+          <span>{{ displayTitle }}</span>
+        </div>
+      </div>
+    </div>
 
     <div
       class="sidebar fixed top-0 left-0 z-40 flex h-full flex-col bg-white border-r border-gray-200 transition-all duration-300"
