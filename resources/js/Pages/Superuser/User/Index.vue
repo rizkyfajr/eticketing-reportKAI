@@ -16,6 +16,7 @@ import ButtonRed from '@/Components/Button/Red.vue'
 import Close from '@/Components/Button/Close.vue'
 import Input from '@/Components/Input.vue'
 import InputError from '@/Components/InputError.vue'
+import Button from '@/Components/Button.vue'
 
 const self = getCurrentInstance()
 const render = ref(true)
@@ -141,44 +142,44 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
 <template>
   <DashboardLayout
-    :title="__('user')"
+    :title="__('User')"
   >
-    <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">User</h2>
+    <!-- <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
+            <h2 class="font-bold text-2xl">Master Data User</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
            <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Builtin</span> 
             <slot />
-        </main>
-    <Card class="bg-white pt-[1.875rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200">
+        </main> -->
+    <Card class="bg-white pt-[1.100rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;">
       <template #header>
-        <div class="flex items-center justify-end space-x-2 p-2 pr-[1.688rem]">
-          <ButtonGreen
+        <div class="flex items-center justify-end px-4 py-1 rounded space-x-2 p-2 pr-[1.688rem]">
+          <Button
             v-if="can('create user')"
             @click.prevent="form.id = null; show()"
-            class="flex items-center justify-center grid gap-1 w-auto h-11 mr-[1.313rem] rounded-md text-center bg-green-600 hover:bg-green-700 active:bg-green-800 h-[35px] text-center pr-[30px] pl-[30px] w-full flex items-center justify-center space-x-2 ml-[20px] mr-[20px]"
+            class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800"
           >
             <!-- <Icon name="plus" /> -->
-            <p class="capitalize font-semibold text-[0.938rem]">
-              {{ __('create') }}
+            <p class="font-bold text-xs">
+              {{ __('Tambah') }}
             </p>
-          </ButtonGreen>
+          </Button>
         </div>
       </template>
 
       <template #body>
-        <div class="flex flex-col space-y-2">
+        <div class="flex flex-col space-y-1">
           <Builder
             v-if="render"
             :url="route('superuser.user.paginate')"
             ref="table"
           >
             <template #thead="table">
-              <tr class="bg-gray-200 border-gray-300">
+              <tr class="bg-gray-100 border-b border-gray-300">
                 <Th
                   :table="table"
                   :sort="false"
-                  class="border px-3 py-2 text-center capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('no') }}
                 </Th>
@@ -187,7 +188,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   :table="table"
                   :sort="true"
                   name="name"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('name') }}
                 </Th>
@@ -196,34 +197,34 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   :table="table"
                   :sort="true"
                   name="username"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
-                  {{ __('username') }}
+                  {{ __('nipp') }}
                 </Th>
 
                 <Th
                   :table="table"
                   :sort="true"
                   name="postion_id"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
-                  {{ __('postion') }}
+                  {{ __('jabatan') }}
                 </Th>
 
                 <Th
                   :table="table"
                   :sort="true"
                   name="division_id"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
-                  {{ __('division') }}
+                  {{ __('bagian') }}
                 </Th>
 
                 <Th
                   :table="table"
                   :sort="true"
                   name="email"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('email') }}
                 </Th>
@@ -231,7 +232,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <Th
                   :table="table"
                   :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('permissions') }}
                 </Th>
@@ -239,7 +240,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <Th
                   :table="table"
                   :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('roles') }}
                 </Th>
@@ -248,7 +249,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   :table="table"
                   :sort="true"
                   name="email_verified_at"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('verified at') }}
                 </Th>
@@ -257,7 +258,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   :table="table"
                   :sort="true"
                   name="created_at"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('created at') }}
                 </Th>
@@ -266,7 +267,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                   :table="table"
                   :sort="true"
                   name="updated_at"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('updated at') }}
                 </Th>
@@ -274,107 +275,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <Th
                   :table="table"
                   :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('Aksi') }}
-                </Th>
-              </tr>
-            </template>
-
-            <template #tfoot="table">
-              <tr class="bg-gray-200 border-gray-300">
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center capitalize font-bold pl-[2.75rem] pb-[1.5rem]"
-                >
-                  {{ __('no') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold "
-                >
-                  {{ __('name') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('username') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('position') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('division') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('email') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('permissions') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('roles') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('verified at') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('created at') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
-                >
-                  {{ __('updated at') }}
-                </Th>
-
-                <Th
-                  :table="table"
-                  :sort="false"
-                  class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold"
+                  class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs"
                 >
                   {{ __('Aksi') }}
                 </Th>
@@ -391,8 +292,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                 <template v-if="empty">
                   <tr>
                     <td class="text-5xl text-center p-4" colspan="1000">
-                      <p class="lowercase first-letter:capitalize font-semibold">
-                        {{ __('there are no data available') }}
+                      <p class="lowercase first-letter:capitalize font-semibold text-xs">
+                        {{ __('Tidak ada data untuk ditampilkan.') }}
                       </p>
                     </td>
                   </tr>
@@ -403,34 +304,34 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     v-for="(user, i) in data"
                     :key="i"
                     :class="processing && 'bg-gray-100'"
-                    class="transition-all duration-300 h-[4.375rem]"
+                    class="transition-all duration-300"
                   >
-                    <td class="px-2 py-1 border-b text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ i + 1 }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ user.name }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ user.username }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ user.positions ? user.positions.position : '' }}
                       <!-- {{ user}} -->
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ user.divisions ? user.divisions.division_name : '' }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ user.email }}
                     </td>
 
-                    <td class="px-2 py-1 border-b text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       <div class="flex-wrap">
                         <div
                           v-for="(permission, j) in user.permissions"
@@ -438,7 +339,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                           class="inline-block bg-gray-200 rounded-md px-3 py-1 m-[1px] text-sm"
                         >
                           <div class="flex items-center justify-between space-x-1">
-                            <p class="uppercase font-semibold whitespace-nowrap">
+                            <p class="uppercase font-semibold whitespace-nowrap text-xs">
                               {{ __(permission.name) }}
                             </p>
 
@@ -453,7 +354,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                       </div>
                     </td>
 
-                    <td class="px-2 py-1 border-b text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       <div class="flex-wrap">
                         <div
                           v-for="(role, j) in user.roles"
@@ -461,7 +362,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                           class="inline-block border rounded-md px-3 py-1 m-[1px] text-sm transition-all"
                         >
                           <div class="flex items-center justify-between space-x-2">
-                            <p class="uppercase font-semibold">
+                            <p class="first-letter:capitalize font-bold text-xs">
                               {{ __(role.name) }}
                             </p>
 
@@ -476,27 +377,27 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                       </div>
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ new Date(user.email_verified_at).toLocaleString('id') }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ new Date(user.created_at).toLocaleString('id') }}
                     </td>
 
-                    <td class="px-2 py-1 border-b uppercase text-center">
+                    <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                       {{ new Date(user.updated_at).toLocaleString('id') }}
                     </td>
 
-                    <td class="px-2 py-1 border-b ">
-                      <div class="flex items-center space-x-2">
+                    <td class="px-2 py-1 border-b text-center">
+                      <div class="flex justify-center gap-2">
                         <ButtonBlue
                           v-if="can('update user')"
                           @click.prevent="edit(user)"
                         >
-                          <!-- <Icon name="edit" /> -->
-                          <p class="capitalize">
-                            {{ __('edit') }}
+                          <Icon name="edit" />
+                          <p class="font-bold text-xs">
+                            {{ __('Edit') }}
                           </p>
                         </ButtonBlue>
 
@@ -504,9 +405,9 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                           v-if="can('delete user')"
                           @click.prevent="destroy(user)"
                         >
-                          <!-- <Icon name="trash" /> -->
-                          <p class="capitalize">
-                            {{ __('delete') }}
+                          <Icon name="trash" />
+                          <p class="font-bold text-xs">
+                            {{ __('Hapus') }}
                           </p>
                         </ButtonRed>
                       </div>
@@ -527,16 +428,16 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
       >
         <Card class="bg-gray-50">
           <template #header>
-            <div class="flex items-center justify-end bg-gray-200 p-2">
+            <div class="flex items-center justify-end space-x-2 bg-gray-200 px-2 py-1 rounded-lg p-1 pb-[5px] pt-[5px]">
               <Close @click.prevent="close" />
             </div>
           </template>
 
           <template #body>
-            <div class="flex flex-col space-y-4 p-4">
+            <div class="flex flex-col space-y-3 p-3">
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="name" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="name" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('name') }}
                   </label>
 
@@ -547,6 +448,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     name="name"
                     required
                     autofocus
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -555,16 +457,17 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="username" class="w-1/3 lowercase first-letter:capitalize">
-                    {{ __('username') }}
+                  <label for="username" class="w-1/3 lowercase first-letter:capitalize text-sm">
+                    {{ __('nipp') }}
                   </label>
                   
                   <Input
                     v-model="form.username"
-                    :placeholder="__('username')"
+                    :placeholder="__('nipp')"
                     type="text"
                     name="username"
                     required
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -573,8 +476,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="position_id" class="w-1/3 lowercase first-letter:capitalize">
-                    {{ __('position') }}
+                  <label for="position_id" class="w-1/3 lowercase first-letter:capitalize text-sm">
+                    {{ __('jabatan') }}
                   </label>
                   
                   <Select
@@ -584,7 +487,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     value: position.id,
                     }))"
                     :searchable="true"
-                    placeholder="Pilih posisi"
+                    placeholder="Pilih jabatan"
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -593,8 +497,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="division_id" class="w-1/3 lowercase first-letter:capitalize">
-                    {{ __('division') }}
+                  <label for="division_id" class="w-1/3 lowercase first-letter:capitalize text-sm">
+                    {{ __('bagaian') }}
                   </label>
                   
                   <Select
@@ -604,7 +508,8 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                       value: division.id,
                     }))"
                     :searchable="true"
-                    placeholder="Pilih divisi"
+                    placeholder="Pilih bagian"
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -613,7 +518,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="email" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="email" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('email') }}
                   </label>
 
@@ -622,6 +527,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :placeholder="__('email')"
                     type="email"
                     name="email"
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -630,7 +536,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="password" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="password" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('password') }}
                   </label>
 
@@ -640,6 +546,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :required="form.id === null"
                     type="password"
                     name="password"
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -648,7 +555,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="password_confirmation" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="password_confirmation" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('password confirmation') }}
                   </label>
 
@@ -658,6 +565,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :placeholder="__('password confirmation')"
                     type="password"
                     name="password_confirmation"
+                    class="w-full text-sm"
                   />
                 </div>
 
@@ -666,7 +574,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="permissions" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="permissions" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('permissions') }}
                   </label>
 
@@ -680,7 +588,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :closeOnSelect="false"
                     :searchable="true"
                     :placeholder="__('permissions')"
-                    class="uppercase"
+                    class="w-full text-sm"
                     mode="tags"
                   />
                 </div>
@@ -690,11 +598,11 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
               <div class="flex flex-col space-y-2">
                 <div class="flex items-center space-x-2">
-                  <label for="roles" class="w-1/3 lowercase first-letter:capitalize">
+                  <label for="roles" class="w-1/3 lowercase first-letter:capitalize text-sm">
                     {{ __('roles') }}
                   </label>
 
-                  <Select
+                  <!-- <Select
                     v-model="form.roles"
                     :options="roles.map(r => ({
                       label: __(r.name),
@@ -706,6 +614,21 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     :placeholder="__('roles')"
                     class="uppercase"
                     mode="tags"
+                  /> -->
+                  <Select
+                    v-model="form.roles"
+                    :options="roles
+                      .filter(r => r.id !== 1 && r.id !== 3)
+                      .map(r => ({
+                        label: __(r.name),
+                        value: r.id,
+                      }))"
+                    :searchable="true"
+                    :clearOnSelect="false"
+                    :closeOnSelect="false"
+                    :placeholder="__('roles')"
+                    class="w-full text-sm"
+                    mode="tags"
                   />
                 </div>
 
@@ -715,13 +638,13 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
           </template>
 
           <template #footer>
-            <div class="flex items-center justify-end space-x-2 bg-gray-200 px-2 py-1">
-              <ButtonGreen type="submit">
+            <div class="flex items-center justify-end space-x-2 bg-gray-200 px-2 py-1 rounded-lg p-1 pb-[5px] pt-[5px]">
+              <Button type="submit" class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800">
                 <Icon name="check" />
-                <p class="uppercase font-semibold">
+                <p class="uppercase font-semibold text-sm">
                   {{ __(form.id ? 'update' : 'create') }}
                 </p>
-              </ButtonGreen>
+              </Button>
             </div>
           </template>
         </Card>

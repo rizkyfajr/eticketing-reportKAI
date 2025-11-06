@@ -102,29 +102,27 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
 <template>
     <DashboardLayout :title="__('Master Checksheet Harian')">
-        <div class="transition-all duration-300" :class="{
+        <!-- <div class="transition-all duration-300" :class="{
             'pl-1 md:pl-64': open,
         }">
         <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Master Check Sheet Harian</h2>
+            <h2 class="font-bold text-2xl">Master Data Check Sheet Harian</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master Check Sheet Harian</span> 
+           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master</span> 
             <slot />
         </main>
-        </div>
-        <Card
-            class="bg-white pt-[1.875rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;"
-          >
+        </div> -->
+        <Card class="bg-white pt-[1.100rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;">
             <template #header>
                 <!-- <h1 class="w-full flex justify-center items-center h-[80px] text-2xl font-bold">Data <span class="ml-2 mr-2"
                         style="font-family: taviraj;"></span>Divison</h1> -->
-                <div class="flex items-center justify-end space-x-2 p-2 pr-[1.688rem]">
+                <div class="flex items-center justify-end px-4 py-1 rounded space-x-2 p-2 pr-[1.688rem]">
                     <Button v-if="can('create check sheet master')" @click.prevent="form.id = null; show()"
-                        class="flex items-center justify-center grid gap-1 w-auto h-11 mr-[1.313rem] rounded-md text-center bg-green-600 hover:bg-green-700"
+                        class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800"
                        >
                         <!-- <Icon name="plus" class="w-full" /> -->
-                        <p class="capitalize font-bold">
+                        <p class="font-bold text-xs">
                             {{ __('Tambah') }}
                         </p>
                     </Button>
@@ -132,101 +130,52 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             </template>
 
             <template #body>
-                <div class="flex flex-col space-y-2">
+                <div class="flex flex-col space-y-1">
                     <Builder v-if="render" :url="route('master-checksheet-day.paginate')" ref="table">
                         <template #thead="table">
-                            <tr class="bg-gray-200 border-gray-300">
+                            <tr class="bg-gray-100 border-b border-gray-300">
                                 <Th :table="table" :sort="false" name="id"
-                                    class="border px-3 py-2 text-center capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('no') }}
                                 </Th>
 
                                 <Th :table="table" :sort="true" name="group_name"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('nama grup') }}
                                 </Th>                       
 
                                 <Th :table="table" :sort="true" name="urutan"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('urutan') }}
                                 </Th>  
 
                                 <Th :table="table" :sort="true" name="komponen"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('komponen') }}
                                 </Th>    
 
                                 <Th :table="table" :sort="true" name="rujukan"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('rujukan') }}
                                 </Th>   
 
                                 <Th :table="table" :sort="true" name="nilai_rujukan"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('nilai rujukan') }}
                                 </Th>  
 
                                 <Th :table="table" :sort="true" name="satuan"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('satuan') }}
                                 </Th>    
 
                                 <Th :table="table" :sort="true" name="jenis_mesin"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('jenis mesin') }}
                                 </Th>                       
 
                                 <Th :table="table" :sort="true"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Action') }}
-                                </Th>
-                            </tr>
-                        </template>
-
-                        <template #tfoot="table">
-                            <tr class="bg-gray-200 border-gray-300 ">
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center capitalize font-bold pl-[2.75rem] pb-[1.5rem]">
-                                    {{ __('no') }}
-                                </Th>
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nama grup') }}
-                                </Th>  
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('urutan') }}
-                                </Th>   
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('komponen') }}
-                                </Th>     
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('rujukan') }}
-                                </Th>  
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('nilai rujukan') }}
-                                </Th>  
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('satuan') }}
-                                </Th>       
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('jenis mesin') }}
-                                </Th>                       
-
-                                <Th :table="table" :sort="true"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('Action') }}
                                 </Th>
                             </tr>
@@ -242,7 +191,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                             <template v-if="empty">
                               <tr>
                                 <td class="text-5xl text-center p-4" colspan="1000">
-                                  <p class="lowercase first-letter:capitalize font-semibold">
+                                  <p class="lowercase first-letter:capitalize font-semibold text-xs">
                                     {{ __('Tidak ada data untuk ditampilkan.') }}
                                   </p>
                                 </td>
@@ -254,48 +203,48 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                 v-for="(check_sheet_master_day, i) in data"
                                 :key="check_sheet_master_day.id"
                                 :class="processing && 'bg-gray-100'"
-                                class="transition-all duration-300 h-[4.375rem]"
+                                class="transition-all duration-300"
                               >
-                                <td class="px-2 py-1 border-b text-center">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ i + 1 }}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.group_name }}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.urutan}}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.komponen }}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.rujukan}}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.nilai_rujukan}}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.satuan}}
                                 </td>
 
-                                <td class="capitalize font-semibold text-center border-b">
+                                <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                   {{ check_sheet_master_day.jenis_mesin}}
                                 </td>
 
-                                <td class="px-2 py-2 border-b text-center">
-                                  <div class="flex justify-center gap-2">
+                                <td class="px-2 py-1 border-b text-center">
+                                <div class="flex justify-center gap-2">
                                     <ButtonBlue
                                       v-if="can('update check sheet master')"
                                       @click.prevent="edit(check_sheet_master_day)"
                                     >
                                       <Icon name="edit" />
-                                      <p class="uppercase">{{ __('ubah') }}</p>
+                                      <p class="font-bold text-xs">{{ __('Ubah') }}</p>
                                     </ButtonBlue>
 
                                     <ButtonRed
@@ -303,7 +252,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                       @click.prevent="destroy(check_sheet_master_day)"
                                     >
                                       <Icon name="trash" />
-                                      <p class="uppercase">{{ __('hapus') }}</p>
+                                      <p class="font-bold text-xs">{{ __('Hapus') }}</p>
                                     </ButtonRed>
                                   </div>
                                 </td>
@@ -322,23 +271,26 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     <!-- Close icon -->
                     <template #header>
                         <div
-                            class="flex items-center justify-end bg-gray-200 rounded-lg p-2 pb-[15px] pt-[15px]">
+                            class="flex items-center justify-end bg-gray-200 rounded-lg p-2 pb-[5px] pt-[5px]">
                             <Close @click.prevent="close" />
                         </div>
                     </template>
 
                     <template #body>
                         <div class="flex flex-col space-y-4 p-4">
-                            <template v-if="hasRole(['superuser', 'user', 'asman', 'spv', 'ampr', 'mpm', 'it']) && !regis">
+                            <template v-if="hasRole(['superuser', 'user', 'it', 'admin']) && !regis">
                                 <div class="flex flex-col space-y-2">
                                   <div class="flex items-center space-x-2">
-                                      <label for="group_name" class="w-1/3 capitalize">
+                                      <label for="group_name" class="w-1/3 capitalize text-sm">
                                           {{ __('Nama Grup') }}
                                       </label>
 
                                       <Input v-model="form.group_name"
-                                          :placeholder="__('Nama Grup (Engine, Mechanical dll)')" type="text"
-                                          required />
+                                          :placeholder="__('Nama Grup (Engine, Mechanical dll)')" 
+                                          type="text"
+                                          required
+                                          class="text-sm" 
+                                        />
                                   </div>
 
                                   <InputError :error="form.errors.group_name" />
@@ -346,13 +298,16 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="urutan" class="w-1/3 capitalize">
+                                        <label for="urutan" class="w-1/3 capitalize text-sm">
                                             {{ __('urutan') }}
                                         </label>
 
                                         <Input v-model="form.urutan"
-                                            :placeholder="__('urutan')" type="text"
-                                            required />
+                                            :placeholder="__('urutan')" 
+                                            type="text"
+                                            required
+                                            class="text-sm" 
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.urutan" />
@@ -360,13 +315,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="komponen" class="w-1/3 capitalize">
+                                        <label for="komponen" class="w-1/3 capitalize text-sm">
                                             {{ __('Komponen') }}
                                         </label>
 
                                         <Input v-model="form.komponen"
-                                            :placeholder="__('Komponen')" type="text"
-                                            />
+                                            :placeholder="__('Komponen')" 
+                                            type="text"
+                                            class="text-sm"
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.komponen" />
@@ -374,13 +331,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="rujukan" class="w-1/3 capitalize">
+                                        <label for="rujukan" class="w-1/3 capitalize text-sm">
                                             {{ __('rujukan') }}
                                         </label>
 
                                         <Input v-model="form.rujukan"
-                                            :placeholder="__('rujukan')" type="text"
-                                            />
+                                            :placeholder="__('rujukan')" 
+                                            type="text"
+                                            class="text-sm"
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.rujukan" />
@@ -388,13 +347,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="nilai_rujukan" class="w-1/3 capitalize">
+                                        <label for="nilai_rujukan" class="w-1/3 capitalize text-sm">
                                             {{ __('nilai rujukan') }}
                                         </label>
 
                                         <Input v-model="form.nilai_rujukan"
-                                            :placeholder="__('nilai rujukan')" type="text"
-                                            />
+                                            :placeholder="__('nilai rujukan')" 
+                                            type="text"
+                                            class="text-sm"
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.nilai_rujukan" />
@@ -402,13 +363,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="satuan" class="w-1/3 capitalize">
+                                        <label for="satuan" class="w-1/3 capitalize text-sm">
                                             {{ __('satuan') }}
                                         </label>
 
                                         <Input v-model="form.satuan"
-                                            :placeholder="__('satuan (%, Bar, °C, dll)')" type="text"
-                                            />
+                                            :placeholder="__('satuan (%, Bar, °C, dll)')" 
+                                            type="text"
+                                            class="text-sm"
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.satuan" />
@@ -416,14 +379,14 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="jenis_mesin" class="w-1/3 capitalize">
+                                        <label for="jenis_mesin" class="w-1/3 capitalize text-sm">
                                         {{ __('jenis mesin') }}
                                         </label>
 
                                         <select
                                         v-model="form.jenis_mesin"
                                         id="jenis_mesin"
-                                        class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm w-full"
+                                        class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm w-full text-sm"
                                         >
                                         <option disabled value="">{{ __('Pilih jenis mesin') }}</option>
                                         <option value="MTT">MTT</option>
@@ -440,19 +403,19 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                     <template #footer>
                         <div
-                            class="flex items-center justify-end space-x-2 bg-gray-200 px-2 py-1 pb-[15px] pt-[15px]">
-                            <ButtonGreen type="submit" v-if="!regis">
+                            class="flex items-center justify-end space-x-2 bg-gray-200 rounded-lg px-2 py-1 pb-[5px] pt-[5px]">
+                            <Button type="submit" v-if="!regis" class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800">
                                 <p class="capitalize font-semibold">
                                     {{ __(form.id ? 'simpan' : 'simpan') }}
                                 </p>
-                            </ButtonGreen>
+                            </Button>
 
-                            <ButtonGreen type="submit" v-if="regis" @click.prevent="update">
+                            <Button type="submit" v-if="regis" @click.prevent="update" class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800">
                                 <Icon name="check" />
                                 <p class="uppercase font-semibold">
                                     {{ __('regis') }}
                                 </p>
-                            </ButtonGreen>
+                            </Button>
                         </div>
                     </template>
                 </Card>

@@ -91,31 +91,18 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
 <template>
     <DashboardLayout :title="__('Working Order')">
-        <div class="transition-all duration-300" :class="{
-            'pl-1 md:pl-64': open,
-        }">
-        <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Working Order</h2>
-           <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
-           <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Working Order</span> 
-            <slot />
-        </main>
-        </div>
-        <Card
-            class="bg-white pt-[1.875rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;"
-          >
+        <Card class="bg-white pt-[1.100rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;">
             <template #header>
                 <!-- <h1 class="w-full flex justify-center items-center h-[80px] text-2xl font-bold">Data <span class="ml-2 mr-2"
                         style="font-family: taviraj;"></span>Divison</h1> -->
-                <div class="flex items-center justify-end space-x-2 p-2 pr-[1.688rem]">
+                <div class="flex items-center justify-end px-4 py-1 rounded space-x-2 p-2 pr-[1.688rem]">
                     <Link :href="route('working-reports.create')">
                       <Button
                           v-if="can('create working report')"
                           class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800"
                       >
-                        <p class="uppercase font-bold">
-                          {{ __('Lapor') }}
+                        <p class="font-bold text-xs">
+                          {{ __('Tambah') }}
                         </p>
                       </Button>
                     </Link>
@@ -123,81 +110,37 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             </template>
 
             <template #body>
-                <div class="flex flex-col space-y-2">
+                <div class="flex flex-col space-y-1">
                     <Builder v-if="render" :url="route('working-reports.paginate')" ref="table">
                         <template #thead="table">
-                            <tr class="bg-gray-200 border-gray-300">
+                            <tr class="bg-gray-100 border-b border-gray-300">
                                 <Th :table="table" :sort="false" name="id"
-                                    class="border px-3 py-2 text-center capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('no') }}
                                 </Th>
                                 
                                 <Th :table="table" :sort="true" name="machine_id"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-left capitalize font-extrabold text-xs">
                                     {{ __('mesin') }}
                                 </Th>
                                 
                                 <Th :table="table" :sort="true" name="region_id"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('wilayah') }}
                                 </Th>
                                 
                                 <Th :table="table" :sort="true" name="date"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('tanggal') }}
                                 </Th>
                                 
-                                <Th :table="table" :sort="true" name="has_trouble"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('trouble') }}
-                                </Th>
-                                
                                 <Th :table="table" :sort="true" name="status"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('status') }}
                                 </Th>
 
                                 <Th :table="table" :sort="true"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Action') }}
-                                </Th>
-                            </tr>
-                        </template>
-
-                        <template #tfoot="table">
-                            <tr class="bg-gray-200 border-gray-300 ">
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center capitalize font-bold">
-                                    {{ __('no') }}
-                                </Th>
-                                
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('mesin') }}
-                                </Th>
-                                
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('wilayah') }}
-                                </Th>
-                                
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('tanggal') }}
-                                </Th>
-                                
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('trouble') }}
-                                </Th>
-                                
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('status') }}
-                                </Th>
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('Action') }}
                                 </Th>
                             </tr>
@@ -207,10 +150,11 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                             <TransitionGroup enterActiveClass="transition-all duration-200"
                                 leaveActiveClass="transition-all duration-200" enterFromClass="opacity-0 -scale-y-100"
                                 leaveToClass="opacity-0 -scale-y-100">
+                                
                                 <template v-if="empty">
                                     <tr>
-                                        <td class="text-5xl text-center p-4" colspan="1000">
-                                            <p class="lowercase first-letter:capitalize font-semibold">
+                                        <td class="text-base text-center p-8 border" colspan="1000">
+                                            <p class="lowercase first-letter:capitalize font-semibold text-gray-500">
                                                 {{ __('Tidak ada data untuk ditampilkan.') }}
                                             </p>
                                         </td>
@@ -218,55 +162,93 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                 </template>
 
                                 <template v-else>
-                                    <tr v-for="(report, i) in data" :key="report.id" :class="processing && 'bg-gray-100'"
-                                        class="transition-all duration-300 h-[4.375rem]">
-                                        <td class="px-2 py-1 border-b text-center">
+                                    <tr v-for="(report, i) in data" :key="report.id" :class="processing ? 'bg-gray-50' : 'hover:bg-gray-50'"
+                                        class="transition-all duration-300">
+                                        
+                                        <td class="border border-gray-300 px-4 py-3 text-center text-xs">
                                             {{ i + 1 }}
                                         </td>
                                         
-                                        <td class="capitalize font-semibold text-center border-b">
-                                            {{ report.machine ? `${report.machine.name}${report.machine.type ? ' - ' + report.machine.type : ''}` : '-' }}
+                                        <td class="border border-gray-300 px-4 py-3 text-left text-xs font-medium">
+                                            {{ 
+                                                report.machine 
+                                                ? `${report.machine.name}${report.machine.type ? ' - ' + report.machine.type : ''}${report.machine.region && report.machine.region.name ? ' (' + report.machine.region.name + ')' : ''}` 
+                                                : '-' 
+                                            }}
                                         </td>
                                         
-                                        <td class="capitalize font-semibold text-center border-b">
-                                            {{ __(report.region?.name ?? '-') }}
+                                        <td class="border border-gray-300 px-4 py-3 text-center text-xs">
+                                            {{ report.region?.name ?? '-' }}
                                         </td>
                                         
-                                        <td class="capitalize font-semibold text-center border-b">
-                                            {{ new Date(report?.date).toOnlyIndonesianDate() }}
+                                        <td class="border border-gray-300 px-4 py-3 text-center text-xs">
+                                            {{ new Date(report?.date).toOnlyIndonesianDate() }} - {{ new Date(report?.date).toLocaleTimeString('id-ID', {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }) }}
                                         </td>
+                                                                                
+                                        <!-- <td class="border border-gray-300 px-4 py-3 text-center text-xs">
+                                            <span :class="{
+                                                'bg-green-100 text-green-800': report.status === 'draft',
+                                                'bg-yellow-100 text-yellow-800': report.status === 'checksheet_done',
+                                                'bg-red-100 text-red-800': report.status === 'warming_up_done',
+                                                'bg-blue-100 text-blue-800': report.status === 'photo_uploaded'
+                                            }" class="px-2 py-1 rounded-full text-xs font-semibold">
+                                                {{ report.status }}
+                                            </span>
+                                        </td> -->
                                         
-                                        <td class="capitalize font-semibold text-center border-b">
-                                            {{ __(report.has_trouble)?? '-' }}
-                                        </td>
-                                        
-                                        <td class="capitalize font-semibold text-center border-b">
-                                            {{ __(report.status) }}
-                                        </td>
+                                        <td class="border border-gray-300 px-4 py-3 text-center text-xs">
+                                            <span
+                                                :class="[
+                                                'px-2 py-1 rounded-full text-xs font-semibold',
+                                                {
+                                                    'bg-gray-100 text-gray-800': report.status === 'draft',
+                                                    'bg-yellow-100 text-yellow-800': report.status === 'checksheet_done',
+                                                    'bg-orange-100 text-orange-800': report.status === 'warming_up_done',
+                                                    'bg-blue-100 text-blue-800': report.status === 'photo_uploaded',
+                                                    'bg-green-100 text-green-800': report.status === 'selesai',
+                                                },
+                                                ]"
+                                            >
+                                                {{
+                                                report.status === 'draft'
+                                                    ? 'Proses Draft'
+                                                    : report.status === 'checksheet_done'
+                                                    ? 'Proses Checksheet'
+                                                    : report.status === 'warming_up_done'
+                                                    ? 'Proses Warming Up'
+                                                    : report.status === 'photo_uploaded'
+                                                    ? 'Proses Upload'
+                                                    : report.status === 'selesai'
+                                                    ? 'Selesai'
+                                                    : report.status
+                                                }}
+                                            </span>
+                                            </td>
 
-                                        <td class="px-2 py-2 border-b text-center">
-                                            <div class="flex justify-center gap-2">
 
-                                                <Button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
-                                                    <Link :href="route('working-reports.detail', report.id)">
-                                                        <Icon name="eye" />
+                                        <td class="border border-gray-300 px-1 py-1 text-center">
+                                            <div class="flex justify-center gap-1">
+                                                
+                                                <Button class="bg-gray-600 text-white text-sm px-0 py-0 rounded-md hover:bg-gray-700">
+                                                    <Link :href="route('working-reports.detail', report.id)" class="bg-gray-600 text-white px-2 py-0.5 rounded hover:bg-gray-700"> 
+                                                        <Icon name="eye" class="w-4 h-4"/> 
                                                     </Link>
                                                 </Button>
 
-                                                <ButtonBlue
-                                                    v-if="can('update working report')"
-                                                >
-                                                    <Link :href="route('working-reports.edit', report.id)">
-                                                        <Icon name="pen" />
+                                                <Button class="bg-blue-600 text-white text-sm px-0 py-0 rounded-md hover:bg-blue-700">
+                                                    <Link v-if="can('update working report')" :href="route('working-reports.edit', report.id)" class="bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 transition duration-150"> 
+                                                        <Icon name="pen" class="w-4 h-4"/> 
                                                     </Link>
-                                                </ButtonBlue>
+                                                </Button>
 
-                                                <ButtonRed
-                                                    v-if="can('delete working report')"
-                                                    @click.prevent="destroy(report)">
-                                                    <Icon name="trash" />
-                                                </ButtonRed>
-
+                                                <Button v-if="can('delete working report')" @click.prevent="destroy(report)" class="bg-red-600 text-white px-0 py-0 rounded hover:bg-red-700 transition duration-150">
+                                                    <div class="bg-red-600 text-white px-2 py-0.5 rounded hover:bg-red-700">  
+                                                        <Icon name="trash" class="w-4 h-4"/> 
+                                                    </div>
+                                                </Button> 
                                             </div>
                                         </td>
                                     </tr>

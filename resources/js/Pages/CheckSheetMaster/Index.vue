@@ -97,15 +97,15 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 <style src="@/multiselect.css"></style>
 
 <template>
-    <DashboardLayout :title="__('Laporin')">
+    <DashboardLayout :title="__('Master Checksheet silang')">
         <div class="transition-all duration-300" :class="{
             'pl-1 md:pl-64': open,
         }">
         <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Master Check Sheet</h2>
+            <h2 class="font-bold text-2xl">Master Data Check Sheet Silang</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master Check Sheet</span> 
+           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master</span> 
             <slot />
         </main>
         </div>

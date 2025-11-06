@@ -90,31 +90,29 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 <style src="@/multiselect.css"></style>
 
 <template>
-    <DashboardLayout :title="__('Laporin')">
-        <div class="transition-all duration-300" :class="{
+    <DashboardLayout :title="__('Daop/Divre')">
+        <!-- <div class="transition-all duration-300" :class="{
             'pl-1 md:pl-64': open,
         }">
         <main class="p-0 py-0 mb-[1.25rem] ml-[1.25rem] mt-[1.25rem]">
-            <h2 class="font-bold text-2xl">Wilayah</h2>
+            <h2 class="font-bold text-2xl">Master Data Daop/Divre</h2>
            <a type="button" href="/" class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-600">Home</a> 
            <span class="font-semibold text-sm pl-2 pr-2">-</span>
-           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Wilayah</span> 
+           <span class="text-sm text-gray-500 font-semibold hover:text-sky-600 focus:text-sky-700">Master</span> 
             <slot />
         </main>
-        </div>
-        <Card
-            class="bg-white pt-[1.875rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;"
-          >
+        </div> -->
+        <Card class="bg-white pt-[1.100rem] pb-[2.5rem] shadow-lg border border-solid border-slate-200" style="border-radius: 0.625rem;">
             <template #header>
                 <!-- <h1 class="w-full flex justify-center items-center h-[80px] text-2xl font-bold">Data <span class="ml-2 mr-2"
                         style="font-family: taviraj;"></span>Divison</h1> -->
-                <div class="flex items-center justify-end space-x-2 p-2 pr-[1.688rem]">
+                <div class="flex items-center justify-end px-4 py-1 rounded space-x-2 p-2 pr-[1.688rem]">
                     <Button v-if="can('create region')" @click.prevent="form.id = null; show()"
-                        class="flex items-center justify-center grid gap-1 w-auto h-11 mr-[1.313rem] rounded-md text-center bg-green-600 hover:bg-green-700"
+                        class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800"
                        >
                       
                         <!-- <Icon name="plus" class="w-full" /> -->
-                        <p class="capitalize font-bold">
+                        <p class="font-bold text-xs">
                             {{ __('Tambah') }}
                         </p>
                     </Button>
@@ -122,40 +120,21 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
             </template>
 
             <template #body>
-                <div class="flex flex-col space-y-2">
+                <div class="flex flex-col space-y-1">
                     <Builder v-if="render" :url="route('master-regions.paginate')" ref="table">
                         <template #thead="table">
                             <tr class="bg-gray-200 border-gray-300">
                                 <Th :table="table" :sort="false" name="id"
-                                    class="border px-3 py-2 text-center capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('no') }}
                                 </Th>
                                 <Th :table="table" :sort="true" name="name"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('name') }}
                                 </Th>
 
                                 <Th :table="table" :sort="true"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('Action') }}
-                                </Th>
-                            </tr>
-                        </template>
-
-                        <template #tfoot="table">
-                            <tr class="bg-gray-200 border-gray-300 ">
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center capitalize font-bold pl-[2.75rem] pb-[1.5rem]">
-                                    {{ __('no') }}
-                                </Th>
-
-                                <Th :table="table" :sort="false"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
-                                    {{ __('name') }}
-                                </Th>
-
-                                <Th :table="table" :sort="true"
-                                    class="border px-3 py-2 text-center whitespace-nowrap capitalize font-bold">
+                                    class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                     {{ __('Action') }}
                                 </Th>
                             </tr>
@@ -168,7 +147,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                 <template v-if="empty">
                                     <tr>
                                         <td class="text-5xl text-center p-4" colspan="1000">
-                                            <p class="lowercase first-letter:capitalize font-semibold">
+                                            <p class="lowercase first-letter:capitalize font-semibold text-xs">
                                                 {{ __('Tidak ada data untuk ditampilkan.') }}
                                             </p>
                                         </td>
@@ -177,23 +156,23 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                                 <template v-else>
                                     <tr v-for="(region, i) in data" :key="region.id" :class="processing && 'bg-gray-100'"
-                                        class="transition-all duration-300 h-[4.375rem]">
-                                        <td class="px-2 py-1 border-b text-center">
+                                        class="transition-all duration-300">
+                                        <td class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                             {{ i + 1 }}
                                         </td>
                                         
-                                        <td class="capitalize font-semibold text-center border-b">
+                                        <td class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
                                             {{ __(region.name) }}
                                         </td>
 
-                                        <td class="px-2 py-2 border-b text-center">
-                                            <div class="flex justify-center gap-2">
+                                        <td class="border border-gray-300 px-3 py-1 text-center capitalize font-extrabold text-xs">
+                                        <div class="flex justify-center gap-2">
 
                                                 <ButtonBlue
                                                     v-if="can('update region')"
                                                     @click.prevent="edit(region)">
                                                     <Icon name="edit" />
-                                                    <p class="uppercase">
+                                                    <p class="font-bold text-xs">
                                                         {{ __('ubah') }}
                                                     </p>
                                                 </ButtonBlue>
@@ -202,7 +181,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                                                     v-if="can('delete region')"
                                                     @click.prevent="destroy(region)">
                                                     <Icon name="trash" />
-                                                    <p class="uppercase">
+                                                    <p class="font-bold text-xs">
                                                         {{ __('hapus') }}
                                                     </p>
                                                 </ButtonRed>
@@ -225,7 +204,7 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     <!-- Close icon -->
                     <template #header>
                         <div
-                            class="flex items-center justify-end bg-gray-200 rounded-lg p-2 pb-[15px] pt-[15px]">
+                            class="flex items-center justify-end bg-gray-200 rounded-lg p-2 pb-[5px] pt-[5px]">
                             <Close @click.prevent="close" />
                         </div>
                     </template>
@@ -233,19 +212,20 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
                     <template #body>
                         <div class="flex flex-col space-y-4 p-4">
 
-                          
-
-                            <template v-if="hasRole(['superuser', 'user', 'asman', 'spv', 'ampr', 'mpm', 'it'])">     
+                            <template v-if="hasRole(['superuser', 'it', 'admin'])">     
 
                                 <div class="flex flex-col space-y-2">
                                     <div class="flex items-center space-x-2">
-                                        <label for="name" class="w-1/3 capitalize">
+                                        <label for="name" class="w-1/3 capitalize text-sm">
                                             {{ __('name') }}
                                         </label>
 
                                         <Input v-model="form.name"
-                                            :placeholder="__('name')" type="text"
-                                            required />
+                                            :placeholder="__('name')" 
+                                            type="text"
+                                            required 
+                                            class="text-sm"
+                                        />
                                     </div>
 
                                     <InputError :error="form.errors.name" />
@@ -258,12 +238,12 @@ onUnmounted(() => window.removeEventListener('keydown', esc))
 
                     <template #footer>
                         <div
-                            class="flex items-center justify-end space-x-2 bg-gray-200 px-2 py-1 pb-[15px] pt-[15px]">
-                            <ButtonGreen type="submit">
+                            class="flex items-center justify-end space-x-2 bg-gray-200 rounded-lg px-2 py-1 pb-[5px] pt-[5px]">
+                            <Button type="submit" class="grid md:grid-cols text-center items-center bg-green-600 hover:bg-green-800">
                                 <p class="capitalize font-semibold">
                                     {{ __(form.id ? 'ubah' : 'simpan') }}
                                 </p>
-                            </ButtonGreen>
+                            </Button>
                         </div>
                     </template>
                 </Card>
