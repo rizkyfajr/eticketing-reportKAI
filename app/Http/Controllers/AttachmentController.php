@@ -6,6 +6,8 @@ use App\Models\Attachment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataTableRequest;
 use App\Models\Report;
+use App\Models\Upload;
+use App\Models\WorkResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +121,8 @@ class AttachmentController extends Controller
   {
     switch ($type) {
       case 'Report': return Report::class; break;
+      case 'Upload': return Upload::class; break;
+      case 'WorkResult': return WorkResult::class; break;
       
       default: return null; break;
     }

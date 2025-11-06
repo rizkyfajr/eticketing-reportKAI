@@ -123,6 +123,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::resource('check-sheet-day', App\Http\Controllers\CheckSheetDayController::class);
     Route::post('/check-sheet-day/paginate', [App\Http\Controllers\CheckSheetDayController::class, 'paginate'])
         ->name('check-sheet-day.paginate');
+        
+    Route::post('/upload/autosave', [App\Http\Controllers\UploadController::class, 'autosave']) ->name('upload.autosave');
 
     Route::resource('warming-up', App\Http\Controllers\WarmingUpController::class);
     Route::post('/warming-up/paginate', [App\Http\Controllers\WarmingUpController::class, 'paginate'])
