@@ -24,6 +24,7 @@ class WorkingReport extends Model
 
     protected $with = [
         'checksheet',
+        'upload',
         'warmingup',
         'workresult',
         'machine',
@@ -35,6 +36,11 @@ class WorkingReport extends Model
     public function checksheetday()
     {
         return $this->hasOne(checkSheetDay::class, 'working_report_id', 'id');
+    }
+
+    public function upload()
+    {
+        return $this->hasOne(Upload::class, 'working_report_id', 'id');
     }
 
     public function checksheetworkresult()

@@ -202,7 +202,7 @@ class DivisionController extends Controller
 
       $query->orWhereRelation('createdBy', 'name', 'like', $search);
     })->orderBy($request->input('order.key') ?: 'created_at', $request->input('order.by') ?: 'desc')
-      ->when(!$user->hasRole(['superuser', 'it']), fn (Builder $query) => $query->where('created_by_id', $user->id))
+      ->when(!$user->hasRole(['superuser', 'it', 'admin']), fn (Builder $query) => $query->where('created_by_id', $user->id))
       ->select([
         'id',
         'division_number',

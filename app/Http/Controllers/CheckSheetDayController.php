@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CheckSheetDay;
+use App\Models\WorkingReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,14 +32,16 @@ class CheckSheetDayController extends Controller
             $validated['updated_by_id'] = Auth::id();
 
             $checkSheetDay = CheckSheetDay::create($validated);
+            $workingReport = WorkingReport::findOrFail($validated['working_report_id']);
+            $workingReport->update(['status' => 'checksheet_done']);
 
             DB::commit();
             
             return redirect()->back()->with('success', __('Data berhasil ditambahkan.'));
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return redirect()->back()->with('error', __('Gagal menambahkan Data.'));
+            report($e);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
     
@@ -48,7 +51,7 @@ class CheckSheetDayController extends Controller
             'working_report_id' => 'required|exists:working_reports,id',
             'no_seri' => 'nullable|integer',
             'jenis' => 'nullable|string|max:255',
-            'jam_mesin' => 'nullable|date_format:H:i',
+            'jam_mesin' => 'nullable|date_format:H:i:s',
             'counter_pecok' => 'nullable|integer',
             'kilometer_mesin' => 'nullable|integer',
             'tanggal' => 'nullable|date',

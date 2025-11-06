@@ -16,6 +16,7 @@ use App\Models\WorkResult;
 use App\Models\CheckSheet;
 use App\Models\CheckSheetMaster;
 use App\Models\CheckSheetMasterDay;
+use App\Models\Upload;
 
 class WorkingReportController extends Controller
 {
@@ -31,7 +32,8 @@ class WorkingReportController extends Controller
           'checksheet'  => $report->checksheet,
           'warmingup'   => $report->warmingup,
           'workresult'  => $report->workresult,
-          'machines'    => MasterMachine::select('id', 'name', 'type')->get(),
+        //   'machines'    => MasterMachine::select('id', 'name', 'type')->get(),
+          'machines'    => MasterMachine::with('region')->select('id', 'name', 'type', 'region_id')->get(),
           'regions'     => MasterRegion::select('id', 'name')->get(),
           'users'       => User::select('id', 'name', 'username')->get(),
       ]);
@@ -90,13 +92,15 @@ class WorkingReportController extends Controller
           'results'     => $mergedResults,
           'checksheet'  => $report->checksheet ?? null,
           'checksheetday'  => $report->checksheetday ?? null,
+          'upload'      => $report->upload ?? null,
         //   'checksheetworkresult' => $report->checksheetday?->checksheetworkresult ?? null,
           'checksheetworkresult' => $checksheetworkresult,
           'warmingup'   => $report->warmingup ?? null,
           'warmingup_user'  => $report->warmingup_user ?? null,
           'workresult'  => $report->workresult ?? null,
           'workresult_user'  => $report->workresult_user ?? null,
-          'machines'    => MasterMachine::select('id', 'name', 'type', 'no_sarana')->get(),
+        //   'machines'    => MasterMachine::select('id', 'name', 'type', 'no_sarana')->get(),        
+          'machines'    => MasterMachine::with('region')->select('id', 'name', 'type', 'nomor', 'no_sarana', 'region_id')->get(),
           'regions'     => MasterRegion::select('id', 'name')->get(),
           'users'       => User::select('id', 'name', 'username')->get(),
       ]);
@@ -111,7 +115,7 @@ class WorkingReportController extends Controller
   {
       return Inertia::render('WorkingReport/Create', [
           'report' => $report,
-          'machines' => MasterMachine::select('id', 'name', 'type')->get(),
+          'machines' => MasterMachine::with('region')->select('id', 'name', 'type', 'region_id')->get(),
           'regions' => MasterRegion::select('id', 'name')->get(),
           'users' => User::select('id', 'name')->get(),
       ]);
@@ -138,7 +142,7 @@ class WorkingReportController extends Controller
 
       $report = WorkingReport::create($validated);
       
-    return redirect()->route('working-reports.index')->with('success', 'Working Report berhasil disimpan.');
+    return redirect()->route('working-reports.index')->with('success', 'Working Order berhasil disimpan.');
   }
 
   /**
@@ -164,7 +168,7 @@ class WorkingReportController extends Controller
 
       return Inertia::render('WorkingReport/Update', [
           'report' => $report,
-          'machines' => MasterMachine::select('id', 'name', 'type', 'no_sarana')->get(),
+          'machines' => MasterMachine::with('region')->select('id', 'name', 'type', 'region_id')->get(),
           'regions' => MasterRegion::select('id', 'name')->get(),
           'users' => User::select('id', 'name')->get(),
       ]);
@@ -191,7 +195,7 @@ class WorkingReportController extends Controller
 
       $report->update($validated);
 
-      return redirect()->route('working-reports.index')->with('success', 'Working Report berhasil diubah.');
+      return redirect()->route('working-reports.index')->with('success', 'Working Order berhasil diubah.');
   }
   
   /**
@@ -206,7 +210,7 @@ class WorkingReportController extends Controller
     $region->delete();
 
     return redirect()->back()->with('success', __(
-          'Data Working Report ":name" berhasil dihapus.',
+          'Data Working Order ":name" berhasil dihapus.',
           ['name' => $request->machine_id]
       ));
   }
@@ -238,12 +242,12 @@ class WorkingReportController extends Controller
     //     });
     // })
 
-    ->when(!$user->hasRole(['superuser']), function (Builder $query) use ($user) {
+    ->when(!$user->hasRole(['superuser', 'it', 'admin']), function (Builder $query) use ($user) {
         $query->where(function (Builder $q) use ($user) {
             // Kondisi 1: Hanya data yang dibuat oleh user login
             $q->where('created_by_id', $user->id)
                 // Kondisi 2: Atau user login menjadi salah satu operator di tabel check_sheet_work_results
-                ->orWhereHas('checksheetworkresult', function (Builder $wr) use ($user) {
+                ->orWhereHas('checksheetday.checksheetworkresult', function (Builder $wr) use ($user) {
                     $wr->where(function ($sub) use ($user) {
                         $sub->where('operator_by1', $user->id)
                             ->orWhere('operator_by2', $user->id)
@@ -285,7 +289,7 @@ class WorkingReportController extends Controller
         $section = $request->input('section');
         // $section = $request->input();
 
-        $validSections = ['workingreport', 'checksheet', 'warmingup', 'uploadfoto', 'workresult'];
+        $validSections = ['workingreport', 'checksheet', 'warmingup', 'upload', 'workresult'];
 
         // $report->load('responsibles');
         // $report->load('responsible_process');
@@ -311,7 +315,7 @@ class WorkingReportController extends Controller
                 // $riskImpact = $this->mapRiskImpact($deviation->riskImpactAnalysis);
 
                 $partial = array_merge((array)$partial, $this->warmingupAppends($report));
-            } else if ($section === 'uploadfoto') {
+            } else if ($section === 'upload') {
 
                 $partial = array_merge((array)$partial, $this->uploadAppends($report));
             } else if ($section === 'workresult') {
@@ -365,6 +369,11 @@ class WorkingReportController extends Controller
     }
 
     private function warmingupAppends()
+    {
+        return [];
+    }
+
+    private function uploadAppends()
     {
         return [];
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\WarmingUp;
+use App\Models\WorkingReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -40,7 +41,7 @@ class WarmingUpController extends Controller
     try {
         $validated = $request->validate([
             'working_report_id'  => 'required|exists:working_reports,id',
-            'machine_id'         => 'required|exists:master_machines,id',
+            'machine_id'         => 'nullable|exists:master_machines,id',
             'waktu_start_engine' => 'required|date',
             'jam_kerja'          => 'required|date_format:H:i:s',
             'jam_mesin'          => 'required|date_format:H:i:s',
@@ -83,6 +84,13 @@ class WarmingUpController extends Controller
 
             DB::table('warmingup_user')->insert($crewPivotData);
         }
+        
+        $workingReport = WorkingReport::find($validated['working_report_id']);
+        if ($workingReport) {
+            $workingReport->status = 'warming_up_done';
+            $workingReport->save();
+        }
+
 
         DB::commit();
 
@@ -132,7 +140,7 @@ class WarmingUpController extends Controller
         $warmingup = WarmingUp::findOrFail($id);
 
         $validated = $request->validate([
-            'machine_id'         => 'required|exists:master_machines,id',
+            'machine_id'         => 'nullable|exists:master_machines,id',
             'waktu_start_engine' => 'required|date',
             'jam_kerja'          => 'required|date_format:H:i:s',
             'jam_mesin'          => 'required|date_format:H:i:s',
