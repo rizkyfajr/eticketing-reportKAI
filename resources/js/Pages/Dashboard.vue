@@ -101,14 +101,14 @@ const close = () => {
             </svg> -->
           </div>
           <div class="p-4 text-right">
-            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600 ">Data Feedback</p>
+            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600 ">MTT CSM</p>
             <!-- Date Feedback -->
             <div class=" w-full flex justify-end pt-[20px]"> <h4 class="text-xl rounded-md font-bold "><span class=""> {{count_feedback}}</span> Data</h4></div>
           </div>
          
           <div class="border-t border-blue-gray-50 p-4">
             <p class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600">
-             <div class="w-full flex items-center justify-end"> <button  @click.prevent="clickShowDataFeedback()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div>
+             <!-- <div class="w-full flex items-center justify-end"> <button  @click.prevent="clickShowDataFeedback()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div> -->
             </p>
           </div>
         </div >
@@ -121,12 +121,12 @@ const close = () => {
             </svg> -->
           </div>
           <div class="p-4 text-right">
-            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600">List Kerjaan</p>
+            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600">MTT UNIMAT</p>
             <div class=" w-full flex justify-end pt-[20px]"> <h4 class="text-xl rounded-md font-bold ">
               <span>{{ count_joblist }}</span> Data </h4></div>
           </div>
           <div class="border-t border-blue-gray-50 p-4">
-            <div class="w-full flex items-center justify-end"> <button @click.prevent="clickShowDataListKerjaan()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div>
+            <!-- <div class="w-full flex items-center justify-end"> <button @click.prevent="clickShowDataListKerjaan()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div> -->
           </div>
         </div>
         <!-- Assign -->
@@ -135,23 +135,22 @@ const close = () => {
             <img src="../../../public/assets/check.png" class="w-9" alt="">
           </div>
           <div class="p-4 text-right">
-            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600">Assign</p>
+            <p class="block antialiased font-sans text-md leading-normal font-normal text-blue-gray-600">PBR 400 URS</p>
             <div class=" w-full flex justify-end pt-[20px]"> <h4 class="text-xl rounded-md font-bold ">{{count_assign}} Data</h4></div>
           </div>
           <div class="border-t border-blue-gray-50 p-4">
-            <div class="w-full flex items-center justify-end"> <button @click.prevent="clickShowDataAssign()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div>
+            <!-- <div class="w-full flex items-center justify-end"> <button @click.prevent="clickShowDataAssign()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div> -->
           </div>
         </div>
       </div>
-      <!-- Card Components Data Laporin-->
-      <div class="w-full flex justify-center">
+      
+      <!-- <div class="w-full flex justify-center">
       <div class="bg-white lg:w-[90%] w-full h-full shadow-lg rounded-lg">
     <div class="w-full h-64 text-lg text-white flex pl-[70px] items-start justify-center rounded-t-lg bg-gradient-to-r from-green-400 to-emerald-800 text-3xl font-semibold flex-col">Laporin Notification
     <div class="text-sm pt-3 font-semibold"> Kamu memilik <span class="text-xl font-bold">5</span>  Di laporin</div>
     </div>
     <div class="flex flex-wrap">
       <div class="w-full flex flex-col lg:flex-row justify-center space-y-14 lg:space-y-0 lg:space-x-12 pb-[50px] px-8 lg:px-0">
-        <!-- Data Laporin -->
         <div class="relative flex flex-col w-full lg:w-[30%] h-48 bg-clip-border rounded-xl bg-white text-gray-700 shadow-lg top-[-40px]">
           <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
             <img src="../../../public/assets/report.png" class="w-8" alt="">
@@ -166,7 +165,7 @@ const close = () => {
             </div>
           </div>
         </div>
-        <!-- Laporan Terkirim -->
+        
         <div class="relative flex flex-col w-full lg:w-[30%] h-48 bg-clip-border rounded-xl bg-white text-gray-700 shadow-lg top-[-40px]">
           <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-lime-600 to-lime-400 text-white shadow-lime-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
             <img src="../../../public/assets/send.png" class="w-9" alt="">
@@ -180,7 +179,7 @@ const close = () => {
           </div>
         </div>
       </div>
-      <!-- Laporan Perbaikan -->
+      
       <div class="w-full flex flex-col lg:flex-row justify-center space-y-14 lg:space-y-0 lg:space-x-12 pb-[50px] px-8 lg:px-0">
         <div class="relative flex flex-col w-full lg:w-[30%] h-48 bg-clip-border rounded-xl bg-white text-gray-700 shadow-lg ">
           <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-orange-700 to-orange-400 text-white shadow-orange-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
@@ -194,7 +193,7 @@ const close = () => {
             <div class="w-full flex items-center justify-end"> <button @click.prevent="clickShowDataPerbaikan()" class="middle none center w-20  mr-3 rounded-md bg-green-600 py-3 font-sans text-xs font-bold capitalize text-white shadow-md shadow-green-300 transition-all hover:shadow-lg hover:shadow-green-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" data-ripple-light="true" >Button</button></div>
           </div>
         </div>
-          <!-- Laporan pending -->
+        
         <div class="relative flex flex-col w-full lg:w-[30%] h-48 bg-clip-border rounded-xl bg-white text-gray-700 shadow-lg ">
           <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-red-600 to-red-400 text-white shadow-red--500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
             <img src="../../../public/assets/mail.png" class="w-9" alt="">
@@ -209,7 +208,7 @@ const close = () => {
         </div>
       </div>
 
-      <!-- Laporan Selesai -->
+      
       <div class="w-full flex flex-col lg:flex-row justify-center space-y-14 lg:space-y-0 lg:space-x-12 pb-[50px] px-8 lg:px-0">
         <div class="relative flex flex-col w-full lg:w-[30%] h-48 bg-clip-border rounded-xl bg-white text-gray-700 shadow-lg">
           <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-green-600 to-green-400 text-white shadow-green-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
@@ -230,7 +229,7 @@ const close = () => {
 
 
       <h3 class="text-base font-semibold mt-[5%] mb-8 leading-6 text-gray-900">Data Laporin</h3>
-      <!-- Data Table -->
+      
       <div class="bg-white  rounded-lg">
             <div class="flex items-center justify-end space-x-2 p-2 pt-[3rem] pr-[1.688rem] ">            
           <a href="/report"
@@ -472,11 +471,6 @@ const close = () => {
                         {{ __(report.bagian_pelapor) }}
                         </td>
 
-                        <!-- Awalnya -->
-                        <!-- <td class="capitalize font-semibold text-center border-b ">
-                        {{ __(report.kategori) }}
-                        </td> -->
-                        <!-- Update  -->
                         <td class="capitalize font-semibold text-center border-b"
                                 :class="{
                                     'text-cyan-600': report.kategori === 'Minor',
@@ -526,7 +520,7 @@ const close = () => {
                 </template>
             </Builder>
             </div>
-      </div>
+      </div> -->
 
     </div> 
   </div>
