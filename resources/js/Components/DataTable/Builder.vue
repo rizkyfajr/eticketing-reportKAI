@@ -2,7 +2,7 @@
 import { useForm } from '@inertiajs/inertia-vue3'
 import axios from 'axios'
 import Swal from 'sweetalert2'
-import { getCurrentInstance, nextTick, onMounted, onUnmounted, onUpdated, ref } from 'vue'
+import { getCurrentInstance, nextTick, onMounted, onUnmounted, onUpdated, ref, computed } from 'vue'
 import { cloneDeep } from 'lodash'
 
 const self = getCurrentInstance()
@@ -99,43 +99,80 @@ const all = {
 }
 
 defineExpose(all)
+
+const visibleLinks = computed(() => {
+  if (!paginator.value || !paginator.value.last_page) return []
+
+  const total = paginator.value.last_page
+  const current = paginator.value.current_page
+  const maxVisible = 5
+  const links = []
+
+  let start = Math.max(1, current - 2)
+  let end = Math.min(total, current + 2)
+
+  if (total > maxVisible) {
+    if (start > 2) links.push({ label: 1 })
+    if (start > 3) links.push({ label: '...' })
+
+    for (let i = start; i <= end; i++) {
+      links.push({ label: i })
+    }
+
+    if (end < total - 2) links.push({ label: '...' })
+    if (end < total) links.push({ label: total })
+  } else {
+    for (let i = 1; i <= total; i++) {
+      links.push({ label: i })
+    }
+  }
+
+  return links
+})
+
 </script>
 <!-- per page -->
 
 <template>
-  <div class="flex flex-col w-full  ">
-    <div class="flex flex-col sm:flex-row items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-2 p-2">
-      <div class="w-full sm:max-w-xs flex items-center justify-start pl-8 ">
-        <!-- page heading belum jalan script nya -->
-        <div class="relative inline-block text-left" >
-    <button @click.stop="showOptions = !showOptions" type="button" class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-slate-100  rounded-md shadow-sm focus:bg-slate-200 focus:border-transparent focus:outline-none focus:ring-0 ">
-      {{ perPage }}
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-        <path fill-rule="evenodd" d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-      </svg>
-    </button>
+  <div class="flex flex-col w-full">
+    <div class="flex flex-row items-center justify-between space-x-2 p-2">
+        
+        <div class="flex items-center justify-start flex-shrink-0">
+            <div class="relative inline-block text-left" >
+                <button @click.stop="showOptions = !showOptions" type="button" class="inline-flex justify-center w-full px-4 py-2 text-xs font-medium text-gray-700 bg-slate-100 rounded-md shadow-sm focus:bg-slate-200 focus:border-transparent focus:outline-none focus:ring-0 ">
+                    {{ perPage }}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
 
-    <div v-show="showOptions"  class="origin-top-right absolute right-0 mt-2  w-[75px] rounded-md shadow-lg bg-white border ring-1 ring-black ring-opacity-5 z-50" >
-      <div class="py-1 flex flex-col pt-3 items-center " role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-      <button @click.stop="setPerPage(5)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-14" role="menuitem">5</button>
-      <button @click.stop="setPerPage(10)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-14" role="menuitem">10</button>
-      <button @click.stop="setPerPage(25)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-14" role="menuitem">25</button>
-      <button @click.stop="setPerPage(100)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-14" role="menuitem">100</button>
-    </div>
-    </div>
-  </div>
-      </div>
-        <!--Search Belum jalan script nya  -->
-      <div class="w-full sm:max-w-sm flex items-center space-x-2 sm:justify-end pl-[115px] pr-[20px]">
-        <!-- <label for="search" class="w-1/4 sm:w-auto lowercase first-letter:capitalize">search</label> -->
-        <div class="flex flex-row items-center bg-transparant rounded-md z-10">
-          <!-- <img src="../../../../bootstrap/Search.png" alt="" class="w-5 ml-[19px]"> -->
-          <input v-model="config.search" @input.prevent="refresh()" type="search" name="search" class="z-20 w-full bg-slate-100 h-[40px] rounded-md px-3 py-1 placeholder:capitalize border-transparent focus:bg-slate-200 focus:border-transparent focus:outline-none focus:ring-0" placeholder="search" autofocus>
+                <div v-show="showOptions" class="origin-top-right absolute right-0 mt-1 w-[60px] rounded-md shadow-lg bg-white border ring-0 ring-black ring-opacity-5 z-50" >
+                    <div class="py-1 flex flex-col pt-1 items-center" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <button @click.stop="setPerPage(5)" class="block px-4 py-1 text-xs text-gray-700 hover:bg-gray-100 w-14" role="menuitem">5</button>
+                        <button @click.stop="setPerPage(10)" class="block px-4 py-1 text-xs text-gray-700 hover:bg-gray-100 w-14" role="menuitem">10</button>
+                        <button @click.stop="setPerPage(25)" class="block px-4 py-1 text-xs text-gray-700 hover:bg-gray-100 w-14" role="menuitem">25</button>
+                        <button @click.stop="setPerPage(100)" class="block px-4 py-1 text-xs text-gray-700 hover:bg-gray-100 w-14" role="menuitem">100</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+        
+        <div class="w-full max-w-sm flex items-center space-x-2 justify-end">
+            <div class="flex flex-row items-center bg-transparent rounded-md z-10 w-[30]">
+                <input 
+                    v-model="config.search" 
+                    @input.prevent="refresh()" 
+                    type="search" 
+                    name="search" 
+                    class="z-20 w-full bg-slate-100 h-[30px] rounded-md px-3 py-1 placeholder:capitalize border-transparent focus:bg-slate-200 focus:border-transparent focus:outline-none focus:ring-0 text-xs" 
+                    placeholder="search" 
+                    autofocus
+                >
+            </div>
+        </div>
     </div>
 
-    <div class=" pt-[40px]">
+    <div class=" pt-[9px]">
       <div class="overflow-auto rounded-md max-h-[800px] thin-scrollbar">
         <table class="w-full border-collapse">
           <thead ref="thead" class=" z-10" :class="config.sticky && 'sticky top-0 left-0'">
@@ -155,39 +192,57 @@ defineExpose(all)
   <!-- component -->
         <!-- component -->
         <!-- Pagenation 1 -->
-        <div class="pt-5">
-        <div class="flex justify-end pr-3">
-          <div class=" w-full pl-7">Showing {{ paginator.from }} to {{ paginator.to }} of {{ paginator.total }} entries</div>
-            <nav class="flex space-x-2" aria-label="Pagination">
-              <a href="#" 
-                 v-if="paginator.prev_page_url" 
-                 @click.prevent="changePage(paginator.current_page - 1)" 
-                 class="relative inline-flex items-center px-4 py-2 text-sm bg-slate-100 rounded-md shadow-sm hover:bg-blue-100 hover:text-blue-700 hover:border-blue-100 focus:bg-blue-200 focus:text-blue-800"
+        <div class="pt-3">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3 py-2 text-xs gap-2">
+            <!-- Info kiri -->
+            <div class="text-gray-600 text-center sm:text-left">
+              Showing {{ paginator.from }} to {{ paginator.to }} of {{ paginator.total }} entries
+            </div>
+
+            <!-- Navigasi kanan -->
+            <nav class="flex items-center justify-center flex-wrap gap-1 mt-2 text-xs">
+              <!-- Tombol Previous -->
+              <button
+                v-if="paginator.prev_page_url"
+                @click.prevent="changePage(paginator.current_page - 1)"
+                class="px-3 py-1 bg-slate-100 rounded-md hover:bg-blue-100 hover:text-blue-700"
               >
                 Previous
-              </a>
-              <div v-for="(link, i) in paginator.links" :key="i">
-                  <a 
-                    v-if="link.label != 'pagination.next' && link.label != 'pagination.previous'" 
-                    @click.prevent="changePage(link.label)" 
-                    :class="{
-                      'bg-sky-100': paginator.current_page == link.label,
-                      'relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-fuchsia-100 rounded-md shadow-sm hover:bg-blue-100 hover:text-blue-700 hover:border-blue-100 focus:bg-blue-200 focus:text-blue-800': true
-                    }"
-                  >
-                    {{ link.label }}
-                  </a>
-              </div>
-              
-              <a href="#" 
-                 v-if="paginator.next_page_url" 
-                 @click.prevent="changePage(paginator.current_page + 1)" 
-                 class="relative inline-flex items-center px-4 py-2 text-sm bg-slate-100 rounded-md shadow-sm hover:bg-blue-100 hover:text-blue-700 hover:border-blue-100 focus:bg-blue-200 focus:text-blue-800"
+              </button>
+
+              <!-- Nomor Halaman -->
+              <template v-for="(link, i) in visibleLinks" :key="i">
+                <span
+                  v-if="link.label === '...'"
+                  class="px-2 py-1 text-gray-400 select-none"
+                >
+                  ...
+                </span>
+                <button
+                  v-else
+                  @click.prevent="changePage(Number(link.label))"
+                  :class="[
+                    'px-3 py-1 rounded-md border shadow-sm transition',
+                    paginator.current_page == link.label
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:text-blue-700'
+                  ]"
+                >
+                  {{ link.label }}
+                </button>
+              </template>
+
+              <!-- Tombol Next -->
+              <button
+                v-if="paginator.next_page_url"
+                @click.prevent="changePage(paginator.current_page + 1)"
+                class="px-3 py-1 bg-slate-100 rounded-md hover:bg-blue-100 hover:text-blue-700"
               >
                 Next
-              </a>
+              </button>
             </nav>
-        </div>
+          </div>
+
     </div>
  </div>
   </div>
